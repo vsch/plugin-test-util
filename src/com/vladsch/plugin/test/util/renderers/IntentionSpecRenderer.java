@@ -82,7 +82,7 @@ public class IntentionSpecRenderer<T extends LightFixtureIntentionSpecTest> exte
             return html.toString();
         } else {
             // do comparison of what is there
-            Pair<String, String> highlighting = mySpecTest.collectAndCheckHighlighting(false, true, true, true, false);
+            Pair<String, String> highlighting = mySpecTest.collectAndCheckHighlighting(this, false, true, true, true, false);
             return highlighting.getFirst();
         }
     }

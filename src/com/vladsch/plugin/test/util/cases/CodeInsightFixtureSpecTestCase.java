@@ -225,9 +225,9 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     }
 
     @NotNull
-    default List<IntentionInfo> getAvailableIntentionsWithRanges(@NotNull Editor editor, @NotNull PsiFile file, boolean atCaretOnly) {
+    default List<IntentionInfo> getAvailableIntentionsWithRanges(@NotNull LightFixtureSpecRenderer<?> specRenderer, @NotNull Editor editor, @NotNull PsiFile file, boolean atCaretOnly) {
         // NOTE: needed to simulate getting code analyzer topic
-        beforeDoHighlighting(file);
+        beforeDoHighlighting(specRenderer, file);
 
         IdeaTestExecutionPolicy current = IdeaTestExecutionPolicy.current();
         if (current != null) {
@@ -335,7 +335,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     }
 
-    default void beforeDoHighlighting(@NotNull PsiFile file) {
+    default void beforeDoHighlighting(@NotNull LightFixtureSpecRenderer<?> specRenderer, @NotNull PsiFile file) {
 
     }
 
@@ -432,7 +432,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     void assertException(@NotNull AbstractExceptionCase<?> exceptionCase);
 
-    void assertException(@NotNull AbstractExceptionCase exceptionCase, @Nullable String expectedErrorMsg);
+    void assertException(@NotNull AbstractExceptionCase<?> exceptionCase, @Nullable String expectedErrorMsg);
 
     <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T;
 
@@ -463,6 +463,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     }
 
     default com.vladsch.flexmark.util.Pair<String, String> collectAndCheckHighlighting(
+            @NotNull LightFixtureSpecRenderer<?> specRenderer,
             boolean checkLineMarkers,
             boolean checkWarnings,
             boolean checkInfos,
@@ -472,7 +473,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         ExpectedHighlightingData data = new ExpectedHighlightingData(
                 getEditor().getDocument(), checkWarnings, checkWeakWarnings, checkInfos, ignoreExtraHighlighting, getHostFile());
         data.init();
-        return collectAndCheckHighlighting(data, checkLineMarkers);
+        return collectAndCheckHighlighting(specRenderer, data, checkLineMarkers);
     }
 
     default PsiFile getHostFile() {
@@ -481,7 +482,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         return ReadAction.compute(() -> PsiManager.getInstance(getProject()).findFile(hostVFile));
     }
 
-    default com.vladsch.flexmark.util.Pair<String, String> collectAndCheckHighlighting(@NotNull ExpectedHighlightingData data, boolean checkLineMarkers) {
+    default com.vladsch.flexmark.util.Pair<String, String> collectAndCheckHighlighting(@NotNull LightFixtureSpecRenderer<?> specRenderer, @NotNull ExpectedHighlightingData data, boolean checkLineMarkers) {
         final Project project = getProject();
         EdtTestUtil.runInEdtAndWait(() -> PsiDocumentManager.getInstance(project).commitAllDocuments());
 
@@ -493,6 +494,9 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
         final long start = System.currentTimeMillis();
         final VirtualFile virtualFile = file.getVirtualFile();
+
+        // NOTE: needed to simulate getting code analyzer topic
+        beforeDoHighlighting(specRenderer, file);
 
         // NOTE: line markers may trigger access to project files which the fileTreeAccessFilter blocks, so we limit filter to only the file being checked
         final VirtualFileFilter fileTreeAccessFilter = new VirtualFileFilter() {
@@ -509,9 +513,6 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         if (fileTreeAccessFilter != null) {
             PsiManagerEx.getInstanceEx(project).setAssertOnFileLoadingFilter(fileTreeAccessFilter, disposable);
         }
-
-        // NOTE: needed to simulate getting code analyzer topic
-        beforeDoHighlighting(file);
 
         //    ProfilingUtil.startCPUProfiling();
         List<HighlightInfo> infos;
@@ -608,7 +609,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         });
     }
 
-    default void closeOpenFile() {
+    default void closeOpenFile(@NotNull LightFixtureSpecRenderer<?> specRenderer) {
         Project project = getProject();
         if (project == null) {
             return;

@@ -59,7 +59,7 @@ public class LineMarkerSpecRenderer<T extends LightFixtureLineMarkerSpecTest> ex
                 DaemonCodeAnalyzer.getInstance(getProject()).restart(getFile());
 
                 // do comparison of what is there for line markers
-                Pair<String, String> highlighting = mySpecTest.collectAndCheckHighlighting(true, false, false, false, false);
+                Pair<String, String> highlighting = mySpecTest.collectAndCheckHighlighting(this, true, false, false, false, false);
                 if (html.length() > 0) html.append("\n");
                 CodeInsightFixtureSpecTestCase.appendBanner(html, CodeInsightFixtureSpecTestCase.bannerText("Disabled: " + option));
                 html.append(highlighting.getSecond());
@@ -70,7 +70,7 @@ public class LineMarkerSpecRenderer<T extends LightFixtureLineMarkerSpecTest> ex
             updateDisabledLineMarkers(myOptions);
 
             // do comparison of what is there for line markers
-            Pair<String, String> highlighting = mySpecTest.collectAndCheckHighlighting(true, false, false, false, false);
+            Pair<String, String> highlighting = mySpecTest.collectAndCheckHighlighting(this, true, false, false, false, false);
             return highlighting.getSecond();
         }
     }

@@ -37,6 +37,7 @@ import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.editor.Inlay;
 import com.intellij.openapi.editor.markup.RangeHighlighter;
+import com.intellij.openapi.fileEditor.impl.EditorHistoryManager;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
@@ -93,7 +94,8 @@ import java.util.function.Supplier;
 
 public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecTestCase> extends SpecExampleRendererBase {
     protected final @NotNull T mySpecTest;
-    protected final @NotNull HashMap<String, VirtualFile> myAdditionalProjectFiles = new HashMap<>();
+    protected final @NotNull HashMap<String, VirtualFile> myAdditionalVirtualFiles = new HashMap<>();
+    protected final AdditionalProjectFiles myAdditionalProjectFiles = new AdditionalProjectFiles();
 
     protected final StringBuilder ast = new StringBuilder();
     protected final StringBuilder html = new StringBuilder();
@@ -104,14 +106,23 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     }
 
     @NotNull
+    public HashMap<String, VirtualFile> getAdditionalVirtualFiles() {
+        return myAdditionalVirtualFiles;
+    }
+
+    public AdditionalProjectFiles getAdditionalProjectFiles() {
+        return myAdditionalProjectFiles;
+    }
+
+    @NotNull
     public List<IntentionInfo> getAvailableIntentionsWithRanges(boolean atCaretOnly) {
         // NOTE: needed to simulate getting code analyzer topic
         PsiFile file = getHostFileAtCaret();
 
-        mySpecTest.beforeDoHighlighting(file);
+        mySpecTest.beforeDoHighlighting(this, file);
         doHighlighting();
 
-        return ReadAction.compute(() -> mySpecTest.getAvailableIntentionsWithRanges(getHostEditor(), file, atCaretOnly));
+        return ReadAction.compute(() -> mySpecTest.getAvailableIntentionsWithRanges(this, getHostEditor(), file, atCaretOnly));
     }
 
     @NotNull
@@ -233,24 +244,23 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
         // allow customization of initialization
         mySpecTest.initializeRenderer(this, myOptions);
 
-        AdditionalProjectFiles additionalProjectFiles = new AdditionalProjectFiles();
-        SpecTest.ADDITIONAL_PROJECT_FILES_OPTION.setInstanceData(additionalProjectFiles, myOptions);
+        SpecTest.ADDITIONAL_PROJECT_FILES_OPTION.setInstanceData(myAdditionalProjectFiles, myOptions);
 
-        if (!additionalProjectFiles.getFiles().isEmpty()) {
+        if (!myAdditionalProjectFiles.getFiles().isEmpty()) {
             // create the files and keep track
-            for (Map.Entry<String, Object> entry : additionalProjectFiles.getFiles().entrySet()) {
+            for (Map.Entry<String, Object> entry : myAdditionalProjectFiles.getFiles().entrySet()) {
                 PsiFile psiFile;
 
                 Object value = entry.getValue();
                 if (value instanceof String) {
                     psiFile = addFileToProject(entry.getKey(), (String) value);
-                    myAdditionalProjectFiles.put(entry.getKey(), psiFile.getVirtualFile());
+                    myAdditionalVirtualFiles.put(entry.getKey(), psiFile.getVirtualFile());
                     mySpecTest.LOG().debug(String.format("Created additional file %s '%s' %d", entry.getKey(), Utils.escapeJavaString((String) value), psiFile.getModificationStamp()));
                 } else if (value instanceof ResourceLocation) {
                     // image file
                     ResourceLocation resourceLocation = (ResourceLocation) value;
                     VirtualFile imageFile = mySpecTest.createImageFile(resourceLocation.getResourcePath(), resourceLocation.getResourceInputStream());
-                    myAdditionalProjectFiles.put(entry.getKey(), imageFile);
+                    myAdditionalVirtualFiles.put(entry.getKey(), imageFile);
                     mySpecTest.LOG().debug(String.format("Created additional image file %s %d", entry.getKey(), imageFile.getModificationStamp()));
                 }
             }
@@ -259,7 +269,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
         String name = getExampleFileName(myExample, myOptions);
         if (name.contains("/")) {
             PsiFile psiFile = addFileToProject(name, testInput);
-            myAdditionalProjectFiles.put(name, psiFile.getVirtualFile());
+            myAdditionalVirtualFiles.put(name, psiFile.getVirtualFile());
             configureFromExistingVirtualFile(psiFile.getVirtualFile());
         } else {
             configureByText(name, testInput);
@@ -278,12 +288,18 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     @Override
     public void finalizeRender() {
         // delete additional files
-        if (!myAdditionalProjectFiles.isEmpty()) {
+        // QUERY: seems to be not needed
+        mySpecTest.closeOpenFile(this);
+
+        EditorHistoryManager historyManager = EditorHistoryManager.getInstance(getProject());
+
+        if (!myAdditionalVirtualFiles.isEmpty()) {
             WriteCommandAction.runWriteCommandAction(getProject(), () -> {
-                for (Map.Entry<String, VirtualFile> entry : myAdditionalProjectFiles.entrySet()) {
+                for (Map.Entry<String, VirtualFile> entry : myAdditionalVirtualFiles.entrySet()) {
                     VirtualFile virtualFile = entry.getValue();
                     if (virtualFile.isValid()) {
                         try {
+                            historyManager.removeFile(virtualFile);
                             virtualFile.delete(this);
                         } catch (IOException e) {
                             mySpecTest.LOG().error("Deleting additional files", e);
@@ -292,13 +308,10 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
                 }
             });
 
-            myAdditionalProjectFiles.clear();
+            myAdditionalVirtualFiles.clear();
         }
 
-        // QUERY: seems to be not needed
-        mySpecTest.closeOpenFile();
-
-        mySpecTest.initializeRenderer(this, myOptions);
+        mySpecTest.finalizeRenderer(this, myOptions);
 
         CodeStyleSettingsManager.getInstance(getProject()).dropTemporarySettings();
         CodeStyleSettings codeStyleSettings = CodeStyleSettingsManager.getInstance(getProject()).getTemporarySettings();

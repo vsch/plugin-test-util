@@ -17,19 +17,23 @@ package com.vladsch.plugin.test.util;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.ContentEntry;
+import com.intellij.openapi.roots.LanguageLevelProjectExtension;
+import com.intellij.openapi.roots.ModifiableRootModel;
+import com.intellij.openapi.roots.ModuleRootManagerEx;
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiFile;
-import com.intellij.psi.PsiManager;
-import com.intellij.testFramework.LightProjectDescriptor;
+import com.intellij.psi.impl.PsiManagerEx;
 import com.intellij.testFramework.exceptionCases.AbstractExceptionCase;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
-import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase;
+import com.intellij.testFramework.fixtures.JavaCodeInsightFixtureTestCase;
 import com.intellij.testFramework.fixtures.TempDirTestFixture;
 import com.intellij.util.ThrowableRunnable;
 import com.vladsch.flexmark.test.util.TestUtils;
@@ -56,15 +60,38 @@ import java.util.Map;
 import static org.junit.rules.ExpectedException.none;
 
 @RunWith(value = Parameterized.class)
-public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaCodeInsightFixtureTestCase implements CodeInsightFixtureSpecTestCase {
+public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsightFixtureTestCase implements CodeInsightFixtureSpecTestCase {
+
     @Before
     public void before() throws Throwable {
         setUp();
+
+        // setup
+        SpecTestCaseJavaProjectDescriptor projectDescriptor = getProjectDescriptor();
+        LanguageLevelProjectExtension.getInstance(getProject()).setLanguageLevel(projectDescriptor.getLanguageLevel());
+        Module module = getModule();
+        ModuleRootManagerEx rootManagerEx = ModuleRootManagerEx.getInstanceEx(module);
+        final ModifiableRootModel[] modifiableModel = new ModifiableRootModel[1];
+        final ContentEntry[][] entries = new ContentEntry[1][1];
+
+        ApplicationManager.getApplication().runReadAction(()->{
+            modifiableModel[0] = rootManagerEx.getModifiableModel();
+            entries[0] = modifiableModel[0].getContentEntries();
+        });
+
+        projectDescriptor.configureModule(module, modifiableModel[0], entries[0].length > 0 ? entries[0][0] : null);
     }
 
     @After
     public void after() throws Throwable {
         tearDown();
+    }
+
+
+
+    @Override
+    public String getName() {
+        return "JavaSpecTestCase";
     }
 
     @Rule final public ExpectedException myThrown = none();
@@ -81,7 +108,7 @@ public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaC
     private final Map<String, ? extends DataHolder> myOptionsMap;
     private final @NotNull DataHolder myDefaultOptions;
 
-    public LightJavaCodeInsightFixtureSpecTestCase(@Nullable Map<String, ? extends DataHolder> optionMap, @Nullable DataHolder... defaultOptions) {
+    public JavaCodeInsightFixtureSpecTestCase(@Nullable Map<String, ? extends DataHolder> optionMap, @Nullable DataHolder... defaultOptions) {
         // add standard options
         DataHolder options = TestUtils.combineDefaultOptions(defaultOptions);
         myDefaultOptions = options == null ? new DataSet() : options;
@@ -94,8 +121,7 @@ public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaC
     }
 
     @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
+    protected SpecTestCaseJavaProjectDescriptor getProjectDescriptor() {
         return new SpecTestCaseJavaProjectDescriptor(LanguageLevel.JDK_1_8);
     }
 
@@ -106,8 +132,8 @@ public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaC
 
     // CodeInsightFixtureSpecTestCase implementation
     // @formatter:off
-    @Override final public PsiFile getFile() { return super.getFile();}
-    @Override final public EditorEx getEditor() { return (EditorEx) super.getEditor();}
+    @Override final public PsiFile getFile() { return getFixture().getFile();}
+    @Override final public EditorEx getEditor() { return (EditorEx) getFixture().getEditor();}
     // @formatter:on
 
     // CodeInsightFixtureSpecTestCase implementation
@@ -122,12 +148,12 @@ public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaC
     // Light platform/java methods pulled up to CodeInsightFixtureSpecTestCase
     // @formatter:off
     @Override final public PsiElementFactory getElementFactory() { return super.getElementFactory();}
-    @Override @NotNull final public TempDirTestFixture getTempDirFixture() {return super.getTempDirFixture();}
+    @Override @NotNull final public TempDirTestFixture getTempDirFixture() {return getFixture().getTempDirFixture();}
 
     @Override final public Project getProject() { return super.getProject();}
-    @Override final public PsiManager getPsiManager() { return super.getPsiManager();}
-    @Override final public PsiFile createLightFile(FileType fileType, String text) { return super.createLightFile(fileType, text);}
-    @Override final public PsiFile createLightFile(String fileName, Language language, String text) { return super.createLightFile(fileName, language, text);}
+    @Override final public PsiManagerEx getPsiManager() { return super.getPsiManager();}
+    @Override final public PsiFile createLightFile(FileType fileType, String text) { return getFixture().configureByText(fileType, text);}
+    @Override final public PsiFile createLightFile(String fileName, Language language, String text) { return getFixture().configureByText(fileName, text);}
     @NotNull @Override final public Module getModule() { return super.getModule();}
     @Override final public void addSuppressedException(@NotNull Throwable e) { super.addSuppressedException(e);}
     @Override final public boolean shouldContainTempFiles() { return super.shouldContainTempFiles();}
