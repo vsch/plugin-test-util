@@ -2,3 +2,4 @@
 /out/
 /.idea/workspace.xml
 /plugin-test-util.jar
+/.idea/sbt.xml
