@@ -19,11 +19,15 @@ import com.intellij.lang.Language;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
+import com.intellij.openapi.projectRoots.ProjectJdkTable;
+import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.impl.ProjectJdkImpl;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.LanguageLevelProjectExtension;
 import com.intellij.openapi.roots.ModifiableRootModel;
@@ -88,6 +92,14 @@ public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsight
 
     @After
     public void after() throws Throwable {
+        SpecTestCaseJavaProjectDescriptor projectDescriptor = getProjectDescriptor();
+        Sdk sdk = projectDescriptor.getSdk();
+        if (sdk instanceof ProjectJdkImpl) {
+            WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+                ProjectJdkTable.getInstance().removeJdk(sdk);
+            });
+        }
+
         tearDown();
     }
 
