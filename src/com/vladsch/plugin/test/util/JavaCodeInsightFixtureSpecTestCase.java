@@ -17,6 +17,7 @@ package com.vladsch.plugin.test.util;
 
 import com.intellij.lang.Language;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.editor.ex.EditorEx;
@@ -67,14 +68,17 @@ public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsight
         setUp();
 
         // setup
+        Application application = ApplicationManager.getApplication();
         SpecTestCaseJavaProjectDescriptor projectDescriptor = getProjectDescriptor();
+        application.invokeAndWait(projectDescriptor::setupAndAddSdk);
         LanguageLevelProjectExtension.getInstance(getProject()).setLanguageLevel(projectDescriptor.getLanguageLevel());
+
         Module module = getModule();
         ModuleRootManagerEx rootManagerEx = ModuleRootManagerEx.getInstanceEx(module);
         final ModifiableRootModel[] modifiableModel = new ModifiableRootModel[1];
         final ContentEntry[][] entries = new ContentEntry[1][1];
 
-        ApplicationManager.getApplication().runReadAction(()->{
+        application.runReadAction(() -> {
             modifiableModel[0] = rootManagerEx.getModifiableModel();
             entries[0] = modifiableModel[0].getContentEntries();
         });
@@ -86,8 +90,6 @@ public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsight
     public void after() throws Throwable {
         tearDown();
     }
-
-
 
     @Override
     public String getName() {

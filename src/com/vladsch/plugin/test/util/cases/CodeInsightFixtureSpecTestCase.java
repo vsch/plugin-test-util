@@ -583,8 +583,9 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
                 String expectedHtml = example.getHtml();
                 String actualHtml = exampleRenderer.getHtml();
                 String expectedAst = example.getAst();
-                String actualAst = (expectedAst != null) ? exampleRenderer.getAst() : "";
-                expectedAst = expectedAst == null ? "" : expectedAst;
+
+                // NOTE: null for section signals section does not exist. Adding "" AST will always add AST section if one did not exist in the spec example
+                String actualAst = (expectedAst != null) ? exampleRenderer.getAst() : null;
 
                 if (example.getSection() != null) {
                     StringBuilder outExpected = new StringBuilder();

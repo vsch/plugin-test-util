@@ -19,6 +19,8 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleTypeId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
+import com.intellij.openapi.projectRoots.SdkType;
+import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.LanguageLevelModuleExtension;
 import com.intellij.openapi.roots.ModifiableRootModel;
@@ -51,6 +53,10 @@ public class SpecTestCaseJavaProjectDescriptor extends LightProjectDescriptor {
             AcceptedLanguageLevelsSettings.allowLevel(project, myLanguageLevel);
         }
         super.setUpProject(project, handler);
+    }
+
+    public void setupAndAddSdk() {
+
     }
 
     @Override

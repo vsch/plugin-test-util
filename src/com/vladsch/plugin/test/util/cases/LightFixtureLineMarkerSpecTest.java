@@ -15,6 +15,7 @@
 
 package com.vladsch.plugin.test.util.cases;
 
+import com.vladsch.flexmark.test.util.TestUtils;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.DataKey;
@@ -35,7 +36,7 @@ public interface LightFixtureLineMarkerSpecTest extends CodeInsightFixtureSpecTe
             if (optionsMap.isEmpty()) {
                 optionsMap.putAll(CodeInsightFixtureSpecTestCase.getOptionsMap());
 
-                optionsMap.put("disable-one", new MutableDataSet().set(SpecTest.CUSTOM_OPTION, (option, params) -> SpecTest.customStringOption(option, params, LightFixtureLineMarkerSpecTest::disableOneOption)));
+                optionsMap.put("disable-one", new MutableDataSet().set(SpecTest.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureLineMarkerSpecTest::disableOneOption)));
             }
             return optionsMap;
         }

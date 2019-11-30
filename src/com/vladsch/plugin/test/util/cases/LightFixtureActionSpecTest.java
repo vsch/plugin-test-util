@@ -42,7 +42,7 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
                 optionsMap.put("type-comma", new MutableDataSet().set(ACTION_NAME, ","));
                 optionsMap.put("backspace", new MutableDataSet().set(ACTION_NAME, backspace));
                 optionsMap.put("enter", new MutableDataSet().set(ACTION_NAME, enter));
-                optionsMap.put("type", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> SpecTest.customStringOption(option, params, LightFixtureActionSpecTest::typeOption)));
+                optionsMap.put("type", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureActionSpecTest::typeOption)));
             }
             return optionsMap;
         }

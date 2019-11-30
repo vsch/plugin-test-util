@@ -25,14 +25,12 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import com.vladsch.plugin.test.util.AdditionalProjectFiles;
 import com.vladsch.plugin.test.util.LineMarkerSettings;
 import com.vladsch.plugin.test.util.SpecTestSetup;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 public interface SpecTest extends SpecExampleProcessor {
     DataKey<Boolean> IGNORE = TestUtils.IGNORE;
@@ -72,8 +70,8 @@ public interface SpecTest extends SpecExampleProcessor {
                 optionsMap.put("no-ast", new MutableDataSet().set(SpecTest.WANT_AST, false));
                 optionsMap.put("no-ranges", new MutableDataSet().set(SpecTest.WANT_RANGES, false));
                 optionsMap.put("no-quick-fixes", new MutableDataSet().set(SpecTest.WANT_QUICK_FIXES, false));
-                optionsMap.put("source-extension", new MutableDataSet().set(SpecTest.CUSTOM_OPTION, (option, params) -> SpecTest.customStringOption(option, params, SpecTest::sourceExtensionOption)));
-                optionsMap.put("source-name", new MutableDataSet().set(SpecTest.CUSTOM_OPTION, (option, params) -> SpecTest.customStringOption(option, params, SpecTest::sourceNameOption)));
+                optionsMap.put("source-extension", new MutableDataSet().set(SpecTest.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, SpecTest::sourceExtensionOption)));
+                optionsMap.put("source-name", new MutableDataSet().set(SpecTest.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, SpecTest::sourceNameOption)));
             }
             return optionsMap;
         }
@@ -93,34 +91,5 @@ public interface SpecTest extends SpecExampleProcessor {
         }
 
         throw new IllegalStateException("'source-extension' option requires text for the extension");
-    }
-
-    // handle custom string options
-    static DataHolder customStringOption(@NotNull String option, @Nullable String params, @NotNull Function<String, DataHolder> resolver) {
-        if (params != null) {
-            // allow escape
-            String text = params
-                    .replace("\\\\", "\\")
-                    .replace("\\]", "]")
-                    .replace("\\t", "\t")
-                    .replace("\\n", "\n")
-                    .replace("\\r", "\r")
-                    .replace("\\b", "\b");
-            return resolver.apply(text);
-        }
-        return resolver.apply(null);
-    }
-
-    static DataHolder customIntOption(@NotNull String option, @Nullable String params, @NotNull Function<Integer, DataHolder> resolver) {
-        int value = -1;
-        if (params != null) {
-            if (!params.matches("\\d*")) {
-                throw new IllegalStateException("'" + option + "' option requires a numeric or empty (for default) argument");
-            }
-
-            value = Integer.parseInt(params);
-        }
-
-        return resolver.apply(value);
     }
 }
