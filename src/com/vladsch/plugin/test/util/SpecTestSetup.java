@@ -30,11 +30,16 @@ import java.util.function.Consumer;
 public class SpecTestSetup {
     // @formatter:off
     final static public DataKey<Consumer<CodeStyleSettings>> CODE_STYLE_SETTINGS = new DataKey<>("CODE_STYLE_SETTINGS", (it) -> {});
-    final static public DataKey<Consumer<AdditionalProjectFiles>> ADDITIONAL_PROJECT_FILES = new DataKey<>("ADDITIONAL_PROJECT_FILES", (it) -> {});
-    final static public DataKey<Consumer<LineMarkerSettings>> LINE_MARKER_SETTINGS = new DataKey<>("LINE_MARKER_SETTINGS", (it) -> {});
     final public static SettableInstance<CodeStyleSettings> CODE_STYLE_SETTINGS_OPTION = new SettableInstance<>(CODE_STYLE_SETTINGS);
+
+    final static public DataKey<Consumer<AdditionalProjectFiles>> ADDITIONAL_PROJECT_FILES = new DataKey<>("ADDITIONAL_PROJECT_FILES", (it) -> {});
     final public static SettableInstance<AdditionalProjectFiles> ADDITIONAL_PROJECT_FILES_OPTION = new SettableInstance<>(ADDITIONAL_PROJECT_FILES);
+
+    final static public DataKey<Consumer<LineMarkerSettings>> LINE_MARKER_SETTINGS = new DataKey<>("LINE_MARKER_SETTINGS", (it) -> {});
     final public static SettableInstance<LineMarkerSettings> LINE_MARKER_SETTINGS_OPTION = new SettableInstance<>(LINE_MARKER_SETTINGS);
+
+    final static public DataKey<Consumer<DebugLogSettings>> DEBUG_LOG_SETTINGS = new DataKey<>("DEBUG_LOG_SETTINGS", (it) -> {});
+    final public static SettableInstance<DebugLogSettings> DEBUG_LOG_SETTINGS_OPTION = new SettableInstance<>(DEBUG_LOG_SETTINGS);
     // @formatter:on
 
     private final static SettingsKeyAggregator INSTANCE = new SettingsKeyAggregator();
@@ -55,6 +60,7 @@ public class SpecTestSetup {
             combined = CODE_STYLE_SETTINGS_OPTION.aggregateActions(combined, other, overrides);
             combined = ADDITIONAL_PROJECT_FILES_OPTION.aggregateActions(combined, other, overrides);
             combined = LINE_MARKER_SETTINGS_OPTION.aggregateActions(combined, other, overrides);
+            combined = DEBUG_LOG_SETTINGS_OPTION.aggregateActions(combined, other, overrides);
             return combined;
         }
 

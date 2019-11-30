@@ -11,6 +11,7 @@
 
 * Fix: default test case when running individual spec examples always adding AST section
       regardless of spec AST presence.
+* Add: `log[]` option to enable IDE debug logs in spec example options
 
 ### Version 1.0.0
 

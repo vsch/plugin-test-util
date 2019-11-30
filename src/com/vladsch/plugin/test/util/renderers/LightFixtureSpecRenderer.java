@@ -25,12 +25,14 @@ import com.intellij.codeInspection.InspectionProfileEntry;
 import com.intellij.codeInspection.InspectionToolProvider;
 import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ex.InspectionToolWrapper;
+import com.intellij.diagnostic.DebugLogManager;
 import com.intellij.ide.structureView.newStructureView.StructureViewComponent;
 import com.intellij.lang.Language;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
@@ -68,6 +70,7 @@ import com.vladsch.flexmark.util.sequence.BasedSequence;
 import com.vladsch.flexmark.util.sequence.Range;
 import com.vladsch.flexmark.util.sequence.edit.BasedSegmentBuilder;
 import com.vladsch.plugin.test.util.AdditionalProjectFiles;
+import com.vladsch.plugin.test.util.DebugLogSettings;
 import com.vladsch.plugin.test.util.IntentionInfo;
 import com.vladsch.plugin.test.util.cases.CodeInsightFixtureSpecTestCase;
 import com.vladsch.plugin.test.util.cases.SpecTest;
@@ -99,6 +102,8 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
 
     protected final StringBuilder ast = new StringBuilder();
     protected final StringBuilder html = new StringBuilder();
+    private List<DebugLogManager.Category> mySavedCategories;
+    private DebugLogSettings myDebugLogSettings;
 
     public LightFixtureSpecRenderer(@NotNull T specTest, @NotNull SpecExample example, @Nullable DataHolder options) {
         super(example, options, true);
@@ -232,6 +237,14 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
 
     @Override
     public void parse(CharSequence input) {
+        myDebugLogSettings = new DebugLogSettings();
+        SpecTest.DEBUG_LOG_SETTINGS_OPTION.setInstanceData(myDebugLogSettings, myOptions);
+        DebugLogManager logCustomizer = ApplicationManager.getApplication().getComponent(DebugLogManager.class);
+        mySavedCategories = logCustomizer.getSavedCategories();
+
+        logCustomizer.clearCategories(mySavedCategories);
+        logCustomizer.applyCategories(myDebugLogSettings.getLogCategories());
+
         String testInput = TestUtils.replaceCaretMarkers(input);
 
         CodeStyleSettings codeStyleSettings = CodeStyleSettingsManager.getInstance(getProject()).getMainProjectCodeStyle();
@@ -316,6 +329,10 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
         CodeStyleSettingsManager.getInstance(getProject()).dropTemporarySettings();
         CodeStyleSettings codeStyleSettings = CodeStyleSettingsManager.getInstance(getProject()).getTemporarySettings();
         assert codeStyleSettings == null;
+
+        DebugLogManager logCustomizer = ApplicationManager.getApplication().getComponent(DebugLogManager.class);
+        logCustomizer.clearCategories(myDebugLogSettings.getLogCategories());
+        logCustomizer.applyCategories(mySavedCategories);
     }
 
     // @formatter:off
