@@ -72,6 +72,7 @@ import com.vladsch.flexmark.test.util.spec.SpecExample;
 import com.vladsch.flexmark.test.util.spec.SpecReader;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.DataSet;
+import com.vladsch.flexmark.util.html.Escaping;
 import com.vladsch.plugin.test.util.IntentionInfo;
 import com.vladsch.plugin.test.util.renderers.LightFixtureSpecRenderer;
 import com.vladsch.plugin.util.TestUtils;
@@ -170,10 +171,13 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         lineMarkerInfos.sort(comparingInt(o -> o.startOffset));
         String documentText = myDocument.getText();
         for (LineMarkerInfo expectedLineMarker : lineMarkerInfos) {
+            String lineMarkerTooltip = expectedLineMarker.getLineMarkerTooltip();
             result.append(documentText, index, expectedLineMarker.startOffset)
                     .append("<lineMarker ")
                     .append("icon=\"").append(iconResolver.apply(expectedLineMarker.getIcon())).append("\" ")
-                    .append("descr=\"").append(expectedLineMarker.getLineMarkerTooltip()).append("\" ")
+                    // NOTE: escaping HTML hides the HTML used for markup so only double quotes are escaped
+//                    .append("descr=\"").append(lineMarkerTooltip == null ? null : Escaping.escapeHtml(lineMarkerTooltip,false)).append("\" ")
+                    .append("descr=\"").append(lineMarkerTooltip == null ? null : lineMarkerTooltip.replace("\"","&quot;")).append("\" ")
                     .append(">")
                     .append(documentText, expectedLineMarker.startOffset, expectedLineMarker.endOffset)
                     .append("</lineMarker>");
