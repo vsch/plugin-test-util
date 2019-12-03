@@ -36,6 +36,7 @@ import com.intellij.pom.java.LanguageLevel;
 import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.impl.PsiManagerEx;
+import com.intellij.testFramework.builders.JavaModuleFixtureBuilder;
 import com.intellij.testFramework.exceptionCases.AbstractExceptionCase;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import com.intellij.testFramework.fixtures.JavaCodeInsightFixtureTestCase;
@@ -70,37 +71,27 @@ public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsight
     @Before
     public void before() throws Throwable {
         setUp();
-
-        // setup
-        Application application = ApplicationManager.getApplication();
-        SpecTestCaseJavaProjectDescriptor projectDescriptor = getProjectDescriptor();
-        application.invokeAndWait(projectDescriptor::setupAndAddSdk);
-        LanguageLevelProjectExtension.getInstance(getProject()).setLanguageLevel(projectDescriptor.getLanguageLevel());
-
-        Module module = getModule();
-        ModuleRootManagerEx rootManagerEx = ModuleRootManagerEx.getInstanceEx(module);
-        final ModifiableRootModel[] modifiableModel = new ModifiableRootModel[1];
-        final ContentEntry[][] entries = new ContentEntry[1][1];
-
-        application.runReadAction(() -> {
-            modifiableModel[0] = rootManagerEx.getModifiableModel();
-            entries[0] = modifiableModel[0].getContentEntries();
-        });
-
-        projectDescriptor.configureModule(module, modifiableModel[0], entries[0].length > 0 ? entries[0][0] : null);
     }
 
     @After
     public void after() throws Throwable {
-        SpecTestCaseJavaProjectDescriptor projectDescriptor = getProjectDescriptor();
-        Sdk sdk = projectDescriptor.getSdk();
-        if (sdk instanceof ProjectJdkImpl) {
-            WriteCommandAction.runWriteCommandAction(getProject(), () -> {
-                ProjectJdkTable.getInstance().removeJdk(sdk);
-            });
-        }
-
         tearDown();
+    }
+
+    @Override
+    protected void tuneFixture(JavaModuleFixtureBuilder moduleBuilder) throws Exception {
+        super.tuneFixture(moduleBuilder);
+
+        //moduleBuilder.addJdk("/Applications/IntelliJ-IDEA-2019.3-CE-EAP.app/Contents/jbr/Contents/Home");
+        moduleBuilder.setLanguageLevel(LanguageLevel.JDK_1_8);
+//        moduleBuilder.addLibrary("test_lib",
+//                "/Users/vlad/src/projects/idea-multimarkdown3/WebViewDebugSample/lib/annotations-18.0.0.jar"
+//                , "/Users/vlad/src/projects/idea-multimarkdown3/lib/flexmark-parent.jar"
+//                , "/Users/vlad/src/projects/idea-multimarkdown3/lib/flexmark-util.jar"
+//                , "/Users/vlad/src/projects/idea-multimarkdown3/lib/flexmark-test-util.jar"
+//                , "/Users/vlad/src/projects/plugin-test-util/lib/junit-4.12.jar"
+//                , "/Users/vlad/src/projects/plugin-test-util/lib/hamcrest-core-1.3.jar"
+//        );
     }
 
     @Override
@@ -134,10 +125,10 @@ public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsight
         return TestUtils.processOption(myOptionsMap, option);
     }
 
-    @NotNull
-    protected SpecTestCaseJavaProjectDescriptor getProjectDescriptor() {
-        return new SpecTestCaseJavaProjectDescriptor(LanguageLevel.JDK_1_8);
-    }
+//    @Nullable
+//    protected SpecTestCaseJavaProjectDescriptor getProjectDescriptor() {
+//        return null;
+//    }
 
     @Test
     final public void test_case() {

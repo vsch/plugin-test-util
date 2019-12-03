@@ -18,6 +18,7 @@ package com.vladsch.plugin.test.util.renderers;
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.util.Function;
+import com.intellij.util.containers.ContainerUtil;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
 import com.vladsch.flexmark.util.Pair;
 import com.vladsch.flexmark.util.data.DataHolder;
@@ -27,6 +28,7 @@ import com.vladsch.plugin.test.util.cases.SpecTest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class IntentionSpecRenderer<T extends LightFixtureIntentionSpecTest> extends ActionSpecRenderer<T> {
@@ -67,11 +69,18 @@ public class IntentionSpecRenderer<T extends LightFixtureIntentionSpecTest> exte
                 CodeInsightFixtureSpecTestCase.appendBannerIfNeeded(ast, CodeInsightFixtureSpecTestCase.BANNER_AFTER_ACTION);
             }
 
-            final List<IntentionAction> list = filterAvailableIntentions(intentionAction);
+            List<IntentionAction> list = filterAvailableIntentions(intentionAction);
+
             if (list.isEmpty()) {
                 return ("\"" + intentionAction + "\" not in [" + StringUtil.join(getAvailableIntentions(), INTENTION_NAME_FUN, ", ") + "]");
             } else if (list.size() > 1) {
-                return ("Too many intentions found for \"" + intentionAction + "\": [" + StringUtil.join(list, INTENTION_NAME_FUN, ", ") + "]");
+                // see if there is an exact match
+                final List<IntentionAction> matchedList = ContainerUtil.filter(list, action -> action.getText().equals(intentionAction));
+                if (matchedList.size() == 1) {
+                    list = matchedList;
+                } else {
+                    return ("Too many intentions found without an exact match for \"" + intentionAction + "\": [" + StringUtil.join(list, INTENTION_NAME_FUN, ", ") + "]");
+                }
             }
 
             mySpecTest.beforeDoTestAction(this, myOptions);
