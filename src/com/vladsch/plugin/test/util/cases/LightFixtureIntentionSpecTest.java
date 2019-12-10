@@ -33,7 +33,6 @@ public interface LightFixtureIntentionSpecTest extends LightFixtureActionSpecTes
     DataKey<Class<? extends LocalInspectionTool>[]> INSPECTION_CLASSES = new DataKey<>("INSPECTION_CLASSES", EMPTY_CLASSES);
     DataKey<String> INTENTION_ACTION = new DataKey<>("INTENTION_ACTION", "");
     NullableDataKey<String> FILE_PARAM = new NullableDataKey<>("FILE_PARAM", (String) null);
-    DataKey<Boolean> TEST_CARET_MARKUP = new DataKey<>("TEST_CARET_MARKUP", false);
 
     Map<String, DataHolder> optionsMap = new HashMap<>();
 
@@ -42,7 +41,7 @@ public interface LightFixtureIntentionSpecTest extends LightFixtureActionSpecTes
             if (optionsMap.isEmpty()) {
                 optionsMap.put("intention", new MutableDataSet().set(SpecTest.CUSTOM_OPTION, LightFixtureIntentionSpecTest::intentionOption));
                 optionsMap.put("file-param", new MutableDataSet().set(SpecTest.CUSTOM_OPTION, LightFixtureIntentionSpecTest::fileParamOption));
-                optionsMap.put("caret-markup", new MutableDataSet().set(LightFixtureIntentionSpecTest.TEST_CARET_MARKUP, true));
+                optionsMap.put("caret-markup", new MutableDataSet().set(CodeInsightFixtureSpecTestCase.TEST_CARET_MARKUP, true));
             }
             return optionsMap;
         }

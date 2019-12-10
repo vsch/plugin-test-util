@@ -31,6 +31,8 @@ import java.util.Map;
 public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCase, TestIdeActions {
     DataKey<String> ACTION_NAME = new DataKey<>("ACTION_NAME", "");
     DataKey<String> TYPE_ACTION_TEXT = new DataKey<>("TYPE_ACTION_TEXT", "");
+    DataKey<String> CLIPBOARD_TEXT = new DataKey<>("CLIPBOARD_TEXT", "");
+    DataKey<String> CLIPBOARD_FILE_URL = new DataKey<>("CLIPBOARD_FILE_URL", "");
     String TYPE_ACTION = "type";
     String SKIP_ACTION = "no-op";
 
@@ -42,10 +44,30 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
                 optionsMap.put("type-comma", new MutableDataSet().set(ACTION_NAME, ","));
                 optionsMap.put("backspace", new MutableDataSet().set(ACTION_NAME, backspace));
                 optionsMap.put("enter", new MutableDataSet().set(ACTION_NAME, enter));
+                optionsMap.put("copy", new MutableDataSet().set(ACTION_NAME, copy));
+                optionsMap.put("paste", new MutableDataSet().set(ACTION_NAME, paste));
                 optionsMap.put("type", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureActionSpecTest::typeOption)));
+                optionsMap.put("clipboard", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureActionSpecTest::clipboardOption)));
+                optionsMap.put("clipboard-file-url", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureActionSpecTest::clipboardFileUrl)));
             }
             return optionsMap;
         }
+    }
+
+    static DataHolder clipboardOption(@Nullable String params) {
+        if (params != null) {
+            return new MutableDataSet().set(CLIPBOARD_TEXT, params);
+        }
+
+        throw new IllegalStateException("'clipboard' option requires non-empty text argument");
+    }
+
+    static DataHolder clipboardFileUrl(@Nullable String params) {
+        if (params != null) {
+            return new MutableDataSet().set(CLIPBOARD_FILE_URL, params);
+        }
+
+        throw new IllegalStateException("'clipboard-file-url' option requires non-empty text argument");
     }
 
     static DataHolder typeOption(@Nullable String params) {

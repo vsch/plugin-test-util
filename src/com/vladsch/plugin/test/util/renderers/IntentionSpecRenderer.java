@@ -28,7 +28,6 @@ import com.vladsch.plugin.test.util.cases.SpecTest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class IntentionSpecRenderer<T extends LightFixtureIntentionSpecTest> extends ActionSpecRenderer<T> {
@@ -87,7 +86,7 @@ public class IntentionSpecRenderer<T extends LightFixtureIntentionSpecTest> exte
             launchAction(list.get(0));
             mySpecTest.afterDoTestAction(this, myOptions);
 
-            html.append(getResultTextWithMarkup(true, LightFixtureIntentionSpecTest.TEST_CARET_MARKUP.get(myOptions)));
+            html.append(getResultTextWithMarkup(true, CodeInsightFixtureSpecTestCase.TEST_CARET_MARKUP.get(myOptions)));
             return html.toString();
         } else {
             // do comparison of what is there

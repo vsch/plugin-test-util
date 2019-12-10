@@ -15,11 +15,23 @@
 
 package com.vladsch.plugin.test.util.renderers;
 
+import com.intellij.openapi.ide.CopyPasteManager;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.util.ui.TextTransferable;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.awt.Toolkit;
+
+import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.ACTION_NAME;
+import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.CLIPBOARD_FILE_URL;
+import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.CLIPBOARD_TEXT;
+import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.SKIP_ACTION;
+import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.TYPE_ACTION;
+import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.TYPE_ACTION_TEXT;
 
 public class ActionSpecRenderer<T extends LightFixtureActionSpecTest> extends LightFixtureSpecRenderer<T> {
     public ActionSpecRenderer(@NotNull T specTestBase, @NotNull SpecExample example, @Nullable DataHolder options) {
@@ -27,15 +39,31 @@ public class ActionSpecRenderer<T extends LightFixtureActionSpecTest> extends Li
     }
 
     protected void doTestAction() {
-        String action = LightFixtureActionSpecTest.ACTION_NAME.get(myOptions);
+        String action = ACTION_NAME.get(myOptions);
         if (action.isEmpty()) {
             assertEquals(getExample().getFileUrlWithLineNumber() + "\nACTION_NAME cannot be empty", "action", "");
-        } else if (!action.equals(LightFixtureActionSpecTest.SKIP_ACTION)) {
+        } else if (!action.equals(SKIP_ACTION)) {
             try {
                 mySpecTest.beforeDoTestAction(this, myOptions);
 
-                if (action.equals(LightFixtureActionSpecTest.TYPE_ACTION)) {
-                    String text = LightFixtureActionSpecTest.TYPE_ACTION_TEXT.get(myOptions);
+                String clipboardFileUrl = CLIPBOARD_FILE_URL.get(myOptions);
+                String clipboardText = CLIPBOARD_TEXT.get(myOptions);
+                if (!clipboardFileUrl.isEmpty()) {
+                    VirtualFile virtualFile = myAdditionalVirtualFiles.get(clipboardFileUrl);
+                    assert virtualFile != null : "File: " + clipboardFileUrl + " not found in additional virtual files: " + myAdditionalVirtualFiles;
+
+                    TextTransferable transferable = new TextTransferable(virtualFile.getUrl() + clipboardText);
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable,null);
+                    CopyPasteManager.getInstance().setContents(transferable);
+                } else if (!clipboardText.isEmpty()) {
+                    // need to place it on the clipboard
+                    TextTransferable transferable = new TextTransferable(clipboardText);
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable,null);
+                    CopyPasteManager.getInstance().setContents(transferable);
+                }
+
+                if (action.equals(TYPE_ACTION)) {
+                    String text = TYPE_ACTION_TEXT.get(myOptions);
                     if (!text.isEmpty()) {
                         type(text);
                     } else {

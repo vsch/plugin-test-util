@@ -40,6 +40,7 @@ public class SpecTestSetup {
 
     final static public DataKey<Consumer<DebugLogSettings>> DEBUG_LOG_SETTINGS = new DataKey<>("DEBUG_LOG_SETTINGS", (it) -> {});
     final public static SettableInstance<DebugLogSettings> DEBUG_LOG_SETTINGS_OPTION = new SettableInstance<>(DEBUG_LOG_SETTINGS);
+
     // @formatter:on
 
     private final static SettingsKeyAggregator INSTANCE = new SettingsKeyAggregator();

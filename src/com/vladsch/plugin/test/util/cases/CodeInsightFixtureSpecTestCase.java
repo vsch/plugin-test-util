@@ -71,6 +71,7 @@ import com.vladsch.flexmark.test.util.spec.ResourceLocation;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
 import com.vladsch.flexmark.test.util.spec.SpecReader;
 import com.vladsch.flexmark.util.data.DataHolder;
+import com.vladsch.flexmark.util.data.DataKey;
 import com.vladsch.flexmark.util.data.DataSet;
 import com.vladsch.flexmark.util.html.Escaping;
 import com.vladsch.plugin.test.util.IntentionInfo;
@@ -110,6 +111,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     ExceptionMatcher EXCEPTION_MATCHER = ExceptionMatcher.matchPrefix(RuntimeException.class, "junit.framework.ComparisonFailure: ");
 
     Map<String, DataHolder> optionsMap = new HashMap<>();
+    DataKey<Boolean> TEST_CARET_MARKUP = new DataKey<>("TEST_CARET_MARKUP", false);
 
     static Map<String, DataHolder> getOptionsMap() {
         synchronized (optionsMap) {

@@ -32,7 +32,6 @@ import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.Disposable;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.Presentation;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.editor.Document;
@@ -74,6 +73,7 @@ import com.vladsch.plugin.test.util.DebugLogSettings;
 import com.vladsch.plugin.test.util.IntentionInfo;
 import com.vladsch.plugin.test.util.cases.CodeInsightFixtureSpecTestCase;
 import com.vladsch.plugin.test.util.cases.SpecTest;
+import com.vladsch.plugin.util.AppUtils;
 import com.vladsch.plugin.util.PsiTreeAstRenderer;
 import com.vladsch.plugin.util.TestUtils;
 import gnu.trove.Equality;
@@ -239,13 +239,13 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public void parse(CharSequence input) {
         myDebugLogSettings = new DebugLogSettings();
         SpecTest.DEBUG_LOG_SETTINGS_OPTION.setInstanceData(myDebugLogSettings, myOptions);
-        DebugLogManager logCustomizer = ApplicationManager.getApplication().getComponent(DebugLogManager.class);
+        DebugLogManager logCustomizer = AppUtils.getApplicationComponentOrService(DebugLogManager.class);
         mySavedCategories = logCustomizer.getSavedCategories();
 
         logCustomizer.clearCategories(mySavedCategories);
         logCustomizer.applyCategories(myDebugLogSettings.getLogCategories());
 
-        String testInput = TestUtils.replaceCaretMarkers(input);
+        String testInput = TestUtils.replaceCaretMarkers(input, CodeInsightFixtureSpecTestCase.TEST_CARET_MARKUP.get(myOptions));
 
         CodeStyleSettings codeStyleSettings = CodeStyleSettingsManager.getInstance(getProject()).getMainProjectCodeStyle();
         assert codeStyleSettings != null;
@@ -330,7 +330,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
         CodeStyleSettings codeStyleSettings = CodeStyleSettingsManager.getInstance(getProject()).getTemporarySettings();
         assert codeStyleSettings == null;
 
-        DebugLogManager logCustomizer = ApplicationManager.getApplication().getComponent(DebugLogManager.class);
+        DebugLogManager logCustomizer = AppUtils.getApplicationComponentOrService(DebugLogManager.class);
         logCustomizer.clearCategories(myDebugLogSettings.getLogCategories());
         logCustomizer.applyCategories(mySavedCategories);
     }
