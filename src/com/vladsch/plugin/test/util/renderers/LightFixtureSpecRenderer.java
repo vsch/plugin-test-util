@@ -67,7 +67,7 @@ import com.vladsch.flexmark.util.Utils;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 import com.vladsch.flexmark.util.sequence.Range;
-import com.vladsch.flexmark.util.sequence.edit.BasedSegmentBuilder;
+import com.vladsch.flexmark.util.sequence.builder.BasedSegmentBuilder;
 import com.vladsch.plugin.test.util.AdditionalProjectFiles;
 import com.vladsch.plugin.test.util.DebugLogSettings;
 import com.vladsch.plugin.test.util.IntentionInfo;
