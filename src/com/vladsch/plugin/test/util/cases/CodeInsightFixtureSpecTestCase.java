@@ -26,6 +26,7 @@ import com.intellij.injected.editor.VirtualFileWindow;
 import com.intellij.lang.Language;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.Disposable;
+import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.CommandProcessor;
@@ -73,7 +74,6 @@ import com.vladsch.flexmark.test.util.spec.SpecReader;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.DataKey;
 import com.vladsch.flexmark.util.data.DataSet;
-import com.vladsch.flexmark.util.html.Escaping;
 import com.vladsch.plugin.test.util.IntentionInfo;
 import com.vladsch.plugin.test.util.renderers.LightFixtureSpecRenderer;
 import com.vladsch.plugin.util.TestUtils;
@@ -86,6 +86,10 @@ import org.junit.ComparisonFailure;
 import org.junit.rules.ExpectedException;
 
 import javax.swing.Icon;
+import javax.swing.JComponent;
+import javax.swing.KeyStroke;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -160,6 +164,16 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         CommandProcessor.getInstance().executeCommand(project, () -> EditorTestUtil.executeAction(editor, actionId), "", null, editor.getDocument());
     }
 
+    static void executeAction(@NotNull Editor editor, boolean assertActionIsEnabled, @NotNull AnAction action) {
+        EditorTestUtil.executeAction(editor, assertActionIsEnabled, action);
+    }
+
+    static void executeKeystroke(@NotNull Editor editor, @NotNull KeyStroke stroke) {
+        JComponent component = editor.getComponent();
+        ActionListener listener = component.getActionForKeyStroke(stroke);
+        listener.actionPerformed(new ActionEvent(component, 0, String.valueOf(stroke.getKeyChar()), stroke.getModifiers()));
+    }
+
     default String resolveIconName(@Nullable Icon icon) {
         return String.valueOf(icon);
     }
@@ -179,7 +193,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
                     .append("icon=\"").append(iconResolver.apply(expectedLineMarker.getIcon())).append("\" ")
                     // NOTE: escaping HTML hides the HTML used for markup so only double quotes are escaped
 //                    .append("descr=\"").append(lineMarkerTooltip == null ? null : Escaping.escapeHtml(lineMarkerTooltip,false)).append("\" ")
-                    .append("descr=\"").append(lineMarkerTooltip == null ? null : lineMarkerTooltip.replace("\"","&quot;")).append("\" ")
+                    .append("descr=\"").append(lineMarkerTooltip == null ? null : lineMarkerTooltip.replace("\"", "&quot;")).append("\" ")
                     .append(">")
                     .append(documentText, expectedLineMarker.startOffset, expectedLineMarker.endOffset)
                     .append("</lineMarker>");
@@ -285,6 +299,27 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     }
 
     LightFixtureSpecRenderer<?> createExampleSpecRenderer(@NotNull SpecExample example, @Nullable DataHolder options);
+
+    /**
+     * Used to add default example options as text
+     *
+     * @param example     example
+     * @param options     example options
+     * @param optionsText option text
+     *
+     * @return resulting data holder to use for spec renderer instantiation
+     */
+    default DataHolder appendDefaultExampleOptions(@NotNull SpecExample example, @Nullable DataHolder options, @NotNull String optionsText) {
+        DataHolder modOptions = com.vladsch.flexmark.test.util.TestUtils.getOptions(example, optionsText, this::options);
+        if (modOptions != null) {
+            if (options != null) {
+                modOptions = modOptions.toMutable().setAll(options).toImmutable();
+            }
+        } else {
+            modOptions = options;
+        }
+        return modOptions;
+    }
 
     /**
      * Load extra settings and initialize spec renderer for parse

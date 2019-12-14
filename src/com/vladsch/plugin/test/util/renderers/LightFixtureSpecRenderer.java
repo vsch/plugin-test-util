@@ -82,6 +82,7 @@ import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import javax.swing.KeyStroke;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
@@ -340,6 +341,8 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public void executeAction(@NotNull String actionId) {mySpecTest.executeAction(actionId);}
     public void executeAction(@NotNull String actionId, @NotNull Editor editor) {mySpecTest.executeAction(actionId, editor);}
     public static void executeAction(@NotNull String actionId, @NotNull Editor editor, Project project) {CodeInsightFixtureSpecTestCase.executeAction(actionId, editor, project);}
+    public static void executeAction(@NotNull Editor editor, boolean assertActionIsEnabled, @NotNull AnAction action) {CodeInsightFixtureSpecTestCase.executeAction(editor, assertActionIsEnabled, action);}
+    public static void executeKeystroke(@NotNull Editor editor, @NotNull KeyStroke stroke) {CodeInsightFixtureSpecTestCase.executeKeystroke(editor,  stroke);}
 
     // delegates to mySpecTest.myFixture
     public Editor getEditor() {return getFixture().getEditor();}

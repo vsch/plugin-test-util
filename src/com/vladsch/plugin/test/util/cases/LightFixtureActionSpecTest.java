@@ -33,6 +33,7 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
     DataKey<String> TYPE_ACTION_TEXT = new DataKey<>("TYPE_ACTION_TEXT", "");
     DataKey<String> CLIPBOARD_TEXT = new DataKey<>("CLIPBOARD_TEXT", "");
     DataKey<String> CLIPBOARD_FILE_URL = new DataKey<>("CLIPBOARD_FILE_URL", "");
+    DataKey<String> INJECTED_TEXT = new DataKey<>("INJECTED_TEXT", "");
     String TYPE_ACTION = "type";
     String SKIP_ACTION = "no-op";
 
@@ -46,12 +47,23 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
                 optionsMap.put("enter", new MutableDataSet().set(ACTION_NAME, enter));
                 optionsMap.put("copy", new MutableDataSet().set(ACTION_NAME, copy));
                 optionsMap.put("paste", new MutableDataSet().set(ACTION_NAME, paste));
+                optionsMap.put("tab", new MutableDataSet().set(ACTION_NAME, tab));
+                optionsMap.put("back-tab", new MutableDataSet().set(ACTION_NAME, backtab));
                 optionsMap.put("type", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureActionSpecTest::typeOption)));
                 optionsMap.put("clipboard", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureActionSpecTest::clipboardOption)));
                 optionsMap.put("clipboard-file-url", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureActionSpecTest::clipboardFileUrl)));
+                optionsMap.put("inject", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureActionSpecTest::injectOption)));
             }
             return optionsMap;
         }
+    }
+
+    static DataHolder injectOption(@Nullable String params) {
+        if (params != null) {
+            return new MutableDataSet().set(ACTION_NAME, inject).set(INJECTED_TEXT, params);
+        }
+
+        throw new IllegalStateException("'inject' option requires non-empty text argument");
     }
 
     static DataHolder clipboardOption(@Nullable String params) {
@@ -62,6 +74,12 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
         throw new IllegalStateException("'clipboard' option requires non-empty text argument");
     }
 
+    /**
+     * Copy the additional file virtual file URL given by file name in the option's text, with additional text appended from
+     * clipboard[] option text. The latter can be used to add ref-anchor to the URL
+     * @param params text
+     * @return data
+     */
     static DataHolder clipboardFileUrl(@Nullable String params) {
         if (params != null) {
             return new MutableDataSet().set(CLIPBOARD_FILE_URL, params);

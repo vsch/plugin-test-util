@@ -15,11 +15,20 @@
 
 package com.vladsch.plugin.test.util.renderers;
 
+import com.intellij.openapi.command.WriteCommandAction;
 import com.intellij.openapi.ide.CopyPasteManager;
+import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.psi.ElementManipulator;
+import com.intellij.psi.ElementManipulators;
+import com.intellij.psi.LiteralTextEscaper;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiLanguageInjectionHost;
 import com.intellij.util.ui.TextTransferable;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
 import com.vladsch.flexmark.util.data.DataHolder;
+import com.vladsch.plugin.test.util.TestIdeActions;
 import com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -38,6 +47,58 @@ public class ActionSpecRenderer<T extends LightFixtureActionSpecTest> extends Li
         super(specTestBase, example, options);
     }
 
+    protected void executeRendererAction(@NotNull String action) {
+        //noinspection SwitchStatementWithTooFewBranches
+        switch (action) {
+            case TestIdeActions.inject:
+                String injectedText = LightFixtureActionSpecTest.INJECTED_TEXT.get(getOptions());
+
+                int offset = getEditor().getCaretModel().getOffset();
+                PsiElement elementAt = getFile().findElementAt(offset);
+                PsiElement hostElement = elementAt;
+                while (!(hostElement == null || hostElement instanceof PsiLanguageInjectionHost || hostElement instanceof PsiFile)) hostElement = hostElement.getParent();
+
+                assert hostElement instanceof PsiLanguageInjectionHost : String.format("Element at caret offset: %d is not PsiLanguageInjectionHost, got: %s", offset, elementAt == null ? "null" : elementAt.getClass().getSimpleName());
+                PsiLanguageInjectionHost injectionHost = (PsiLanguageInjectionHost) hostElement;
+
+                ElementManipulator<PsiLanguageInjectionHost> manipulator = ElementManipulators.getManipulator(injectionHost);
+                assert manipulator != null : "No Element manipulator for " + injectionHost.getClass().getSimpleName();
+
+                assert !injectedText.isEmpty();
+                TextRange rangeInElement = manipulator.getRangeInElement(injectionHost);
+                LiteralTextEscaper<? extends PsiLanguageInjectionHost> escaper = injectionHost.createLiteralTextEscaper();
+                StringBuilder out = new StringBuilder();
+                TextRange contentRange = TextRange.from(0, rangeInElement.getLength());
+                escaper.decode(contentRange, out);
+                String content = out.toString();
+
+                // find caret position in the text
+                int iMax = content.length();
+                int insertPos = -1;
+                int offsetDelta = injectionHost.getTextOffset() + rangeInElement.getStartOffset();
+                for (int i = 0; i <= iMax; i++) {
+                    int offsetInHost = escaper.getOffsetInHost(i, contentRange);
+                    if (offsetInHost >= offset - offsetDelta) {
+                        insertPos = i;
+                        break;
+                    }
+                }
+
+                assert insertPos != -1 : "Caret position not found in decoded element content";
+
+                String finalInjectedText = content.substring(0, insertPos) + injectedText + content.substring(insertPos);
+                PsiLanguageInjectionHost finalHostElement = (PsiLanguageInjectionHost) hostElement;
+                WriteCommandAction.runWriteCommandAction(getProject(), () -> {
+                    manipulator.handleContentChange(finalHostElement, finalInjectedText);
+                });
+                break;
+
+            default:
+                executeAction(action);
+                break;
+        }
+    }
+
     protected void doTestAction() {
         String action = ACTION_NAME.get(myOptions);
         if (action.isEmpty()) {
@@ -53,12 +114,12 @@ public class ActionSpecRenderer<T extends LightFixtureActionSpecTest> extends Li
                     assert virtualFile != null : "File: " + clipboardFileUrl + " not found in additional virtual files: " + myAdditionalVirtualFiles;
 
                     TextTransferable transferable = new TextTransferable(virtualFile.getUrl() + clipboardText);
-                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable,null);
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
                     CopyPasteManager.getInstance().setContents(transferable);
                 } else if (!clipboardText.isEmpty()) {
                     // need to place it on the clipboard
                     TextTransferable transferable = new TextTransferable(clipboardText);
-                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable,null);
+                    Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
                     CopyPasteManager.getInstance().setContents(transferable);
                 }
 
@@ -70,7 +131,7 @@ public class ActionSpecRenderer<T extends LightFixtureActionSpecTest> extends Li
                         assertEquals(getExample().getFileUrlWithLineNumber() + "\nTYPE_ACTION_TEXT cannot be empty for TYPE_ACTION", "text to type", "");
                     }
                 } else {
-                    executeAction(action);
+                    executeRendererAction(action);
                 }
 
                 mySpecTest.afterDoTestAction(this, myOptions);
