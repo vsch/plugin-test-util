@@ -68,16 +68,15 @@ public class ActionSpecRenderer<T extends LightFixtureActionSpecTest> extends Li
                 TextRange rangeInElement = manipulator.getRangeInElement(injectionHost);
                 LiteralTextEscaper<? extends PsiLanguageInjectionHost> escaper = injectionHost.createLiteralTextEscaper();
                 StringBuilder out = new StringBuilder();
-                TextRange contentRange = TextRange.from(0, rangeInElement.getLength());
-                escaper.decode(contentRange, out);
+                escaper.decode(rangeInElement, out);
                 String content = out.toString();
 
                 // find caret position in the text
                 int iMax = content.length();
                 int insertPos = -1;
-                int offsetDelta = injectionHost.getTextOffset() + rangeInElement.getStartOffset();
+                int offsetDelta = injectionHost.getTextOffset();
                 for (int i = 0; i <= iMax; i++) {
-                    int offsetInHost = escaper.getOffsetInHost(i, contentRange);
+                    int offsetInHost = escaper.getOffsetInHost(i, rangeInElement);
                     if (offsetInHost >= offset - offsetDelta) {
                         insertPos = i;
                         break;
