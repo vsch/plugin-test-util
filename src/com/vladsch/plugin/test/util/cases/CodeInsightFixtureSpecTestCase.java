@@ -105,8 +105,6 @@ import java.util.function.Function;
 import static java.util.Comparator.comparingInt;
 
 public interface CodeInsightFixtureSpecTestCase extends SpecTest {
-    String BANNER_PADDING = "------------------------------------------------------------------------";
-    int BANNER_LENGTH = BANNER_PADDING.length();
     String BANNER_AST = bannerText("AST");
     String BANNER_QUICK_FIXES = bannerText("QUICK_FIXES");
     String BANNER_RANGES = bannerText("RANGES");
@@ -125,24 +123,15 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     @NotNull
     static String bannerText(@NotNull String message) {
-        int leftPadding = (BANNER_LENGTH - message.length() - 2) >> 1;
-        int rightPadding = BANNER_LENGTH - message.length() - 2 - leftPadding;
-        return BANNER_PADDING.substring(0, leftPadding) + " " + message + " " + BANNER_PADDING.substring(0, rightPadding) + "\n";
+        return com.vladsch.flexmark.test.util.TestUtils.bannerText(message);
     }
 
     static void appendBanner(@NotNull StringBuilder out, @NotNull String banner) {
-        if (out.length() > 0) {
-            out.append("\n");
-        }
-
-        out.append(banner);
+        com.vladsch.flexmark.test.util.TestUtils.appendBanner(out, banner);
     }
 
     static void appendBannerIfNeeded(@NotNull StringBuilder out, @NotNull String banner) {
-        if (out.length() > 0) {
-            out.append("\n");
-            out.append(banner);
-        }
+        com.vladsch.flexmark.test.util.TestUtils.appendBannerIfNeeded(out, banner);
     }
 
     @NotNull
