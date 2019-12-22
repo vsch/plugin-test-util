@@ -133,11 +133,12 @@ public class ActionSpecRenderer<T extends LightFixtureActionSpecTest> extends Li
                     executeRendererAction(action);
                 }
 
-                mySpecTest.afterDoTestAction(this, myOptions);
             } catch (Throwable t) {
                 html.append(t.getMessage()).append("\n");
                 t.printStackTrace(System.out);
                 System.out.println();
+            } finally {
+                mySpecTest.afterDoTestAction(this, myOptions);
             }
         }
     }
