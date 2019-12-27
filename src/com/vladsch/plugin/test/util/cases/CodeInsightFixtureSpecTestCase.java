@@ -47,7 +47,6 @@ import com.intellij.openapi.util.TextRange;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.openapi.vfs.VirtualFileFilter;
 import com.intellij.psi.PsiDocumentManager;
-import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.impl.PsiManagerEx;
@@ -106,6 +105,8 @@ import static java.util.Comparator.comparingInt;
 
 public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     String BANNER_AST = bannerText("AST");
+    String BANNER_AST_AFTER_ACTION = bannerText("AST After Action");
+    String BANNER_AST_BEFORE_ACTION = bannerText("AST Before Action");
     String BANNER_QUICK_FIXES = bannerText("QUICK_FIXES");
     String BANNER_RANGES = bannerText("RANGES");
     String BANNER_AFTER_ACTION = bannerText("After Action");
@@ -391,8 +392,6 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     @NotNull
     ExpectedException getThrown();
 
-    PsiElementFactory getElementFactory();
-
     @NotNull
     TempDirTestFixture getTempDirFixture();
 
@@ -485,7 +484,11 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     @NotNull
     default String getResultTextWithMarkup(boolean withCarets, boolean withTestCaretMarkup) {
-        Editor editor = getEditor();
+        return getResultTextWithMarkup(getEditor(), withCarets, withTestCaretMarkup);
+    }
+
+    @NotNull
+    default String getResultTextWithMarkup(@NotNull Editor editor, boolean withCarets, boolean withTestCaretMarkup) {
         PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
 
         if (!withCarets) return editor.getDocument().getText();

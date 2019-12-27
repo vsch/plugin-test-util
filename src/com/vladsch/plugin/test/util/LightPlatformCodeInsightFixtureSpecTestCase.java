@@ -108,7 +108,6 @@ public abstract class LightPlatformCodeInsightFixtureSpecTestCase extends LightP
 
     // Light platform/java methods pulled up to CodeInsightFixtureSpecTestCase
     // @formatter:off
-    @Override final public PsiElementFactory getElementFactory() { throw new IllegalStateException("Not Supported");}
     @Override @NotNull final public TempDirTestFixture getTempDirFixture() {return getFixture().getTempDirFixture();}
 
     @Override final public Project getProject() { return super.getProject();}

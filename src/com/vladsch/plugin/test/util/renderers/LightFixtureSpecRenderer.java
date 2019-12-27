@@ -163,9 +163,13 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
         }
 
         if (SpecTest.WANT_AST.get(myOptions) || (wantAstByDefault() && !myOptions.contains(SpecTest.WANT_AST) && myExample.getAst() != null)) {
-            CodeInsightFixtureSpecTestCase.appendBannerIfNeeded(out, CodeInsightFixtureSpecTestCase.BANNER_AST);
-            renderAstText(out, getFile(), "");
+            CodeInsightFixtureSpecTestCase.appendBannerIfNeeded(out, getAstBanner());
+            renderAstText(out, getResultFile(), "");
         }
+    }
+
+    protected String getAstBanner() {
+        return CodeInsightFixtureSpecTestCase.BANNER_AST;
     }
 
     protected void renderQuickFixesText(StringBuilder out) {
@@ -183,6 +187,14 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
             result.addSegments(builder);
             out.append(builder.toStringWithRanges());
         }
+    }
+
+    protected Editor getResultEditor() {
+        return getEditor();
+    }
+
+    protected PsiFile getResultFile() {
+        return getFile();
     }
 
     @NotNull
@@ -458,6 +470,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     @NotNull protected String getExampleFileName(@NotNull SpecExample example, @NotNull DataHolder options) {return CodeInsightFixtureSpecTestCase.getExampleFileName(getClass(),example, options);}
     @NotNull protected String getExampleName(@NotNull SpecExample example) {return CodeInsightFixtureSpecTestCase.getExampleName(example);}
     @NotNull protected String getResultTextWithMarkup(boolean withCarets, boolean withTestCaretMarkup) {return mySpecTest.getResultTextWithMarkup(withCarets, withTestCaretMarkup);}
+    @NotNull protected String getResultTextWithMarkup(@NotNull Editor editor, boolean withCarets, boolean withTestCaretMarkup) {return mySpecTest.getResultTextWithMarkup(editor, withCarets, withTestCaretMarkup);}
     protected Project getProject() {return mySpecTest.getProject();}
     public PsiManager getPsiManager() {return mySpecTest.getPsiManager();}
     public PsiFile createLightFile(FileType fileType, String text) {return mySpecTest.createLightFile(fileType, text);}
