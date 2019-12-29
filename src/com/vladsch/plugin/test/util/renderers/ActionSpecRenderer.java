@@ -70,13 +70,16 @@ public class ActionSpecRenderer<T extends LightFixtureActionSpecTest> extends Li
 
             if (action.equals(inject)) {
                 myResultEditor = getHostEditor();
+            } else {
+                myResultEditor = getEditor();
             }
         }
 
         if (myResultFile == null) {
             PsiDocumentManager.getInstance(getProject()).commitAllDocuments();
 
-            VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(myResultEditor.getDocument());
+            Document document = myResultEditor.getDocument();
+            VirtualFile virtualFile = FileDocumentManager.getInstance().getFile(document);
             if (virtualFile != null) {
                 myResultFile = ReadAction.compute(() -> PsiManager.getInstance(getProject()).findFile(virtualFile));
             }
