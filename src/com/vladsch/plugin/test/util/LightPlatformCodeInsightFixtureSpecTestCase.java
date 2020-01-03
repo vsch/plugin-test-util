@@ -21,13 +21,13 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
-import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.exceptionCases.AbstractExceptionCase;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import com.intellij.testFramework.fixtures.TempDirTestFixture;
+import com.intellij.util.ReflectionUtil;
 import com.intellij.util.ThrowableRunnable;
 import com.vladsch.flexmark.test.util.TestUtils;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
@@ -45,10 +45,17 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import javax.swing.Timer;
 import java.io.File;
 import java.lang.annotation.Annotation;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.DelayQueue;
+import java.util.concurrent.Delayed;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.rules.ExpectedException.none;
 
@@ -63,7 +70,45 @@ public abstract class LightPlatformCodeInsightFixtureSpecTestCase extends LightP
 
     @After
     public void after() throws Throwable {
+        checkJavaSwingTimersAreDisposed();
         tearDown();
+    }
+
+    void checkJavaSwingTimersAreDisposed() {
+        // NOTE: added this otherwise plugin tests fail due to swing timers not being disposed which has nothing to do with the plugin
+        try {
+            Class<?> timerQueueClass = Class.forName("javax.swing.TimerQueue");
+            Method sharedInstance = timerQueueClass.getMethod("sharedInstance");
+            sharedInstance.setAccessible(true);
+            Object timerQueue = sharedInstance.invoke(null);
+            DelayQueue<?> delayQueue = ReflectionUtil.getField(timerQueueClass, timerQueue, DelayQueue.class, "queue");
+            while (true) {
+                Delayed timer = delayQueue.peek();
+
+                if (timer == null) {
+                    return;
+                }
+
+                int delay = Math.toIntExact(timer.getDelay(TimeUnit.MILLISECONDS));
+                String text = "(delayed for " + delay + "ms)";
+                Method getTimer = ReflectionUtil.getDeclaredMethod(timer.getClass(), "getTimer");
+                Timer swingTimer = (Timer) getTimer.invoke(timer);
+                text = "Timer (listeners: " + Arrays.toString(swingTimer.getActionListeners()) + ") " + text;
+                try {
+                    System.out.println("Not disposed javax.swing.Timer: " + text + "; queue:" + timerQueue);
+                } finally {
+                    swingTimer.stop();
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        } catch (NoSuchMethodException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            e.printStackTrace();
+        }
     }
 
     @Rule final public ExpectedException myThrown = none();
