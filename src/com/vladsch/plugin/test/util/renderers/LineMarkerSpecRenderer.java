@@ -2,7 +2,7 @@
  * Copyright (c) 2015-2019 Vladimir Schneider <vladimir.schneider@gmail.com>, all rights reserved.
  *
  * This code is private property of the copyright holder and cannot be used without
- * having obtained a license or prior written permission of the of the copyright holder.
+ * having obtained a license or prior written permission of the copyright holder.
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,7 +19,7 @@ import com.intellij.codeInsight.daemon.DaemonCodeAnalyzer;
 import com.intellij.codeInsight.daemon.impl.LineMarkerSettingsImpl;
 import com.vladsch.flexmark.test.util.TestUtils;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
-import com.vladsch.flexmark.util.Pair;
+import com.vladsch.flexmark.util.misc.Pair;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.sequence.SequenceUtils;
 import com.vladsch.plugin.test.util.LineMarkerSettings;

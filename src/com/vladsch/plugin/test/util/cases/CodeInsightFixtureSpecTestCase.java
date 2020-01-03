@@ -2,7 +2,7 @@
  * Copyright (c) 2015-2019 Vladimir Schneider <vladimir.schneider@gmail.com>, all rights reserved.
  *
  * This code is private property of the copyright holder and cannot be used without
- * having obtained a license or prior written permission of the of the copyright holder.
+ * having obtained a license or prior written permission of the copyright holder.
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -495,7 +495,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         else return TestUtils.getEditorTextWithCaretMarkup(editor, withTestCaretMarkup, LOG());
     }
 
-    default com.vladsch.flexmark.util.Pair<String, String> collectAndCheckHighlighting(
+    default com.vladsch.flexmark.util.misc.Pair<String, String> collectAndCheckHighlighting(
             @NotNull LightFixtureSpecRenderer<?> specRenderer,
             boolean checkLineMarkers,
             boolean checkWarnings,
@@ -515,7 +515,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         return ReadAction.compute(() -> PsiManager.getInstance(getProject()).findFile(hostVFile));
     }
 
-    default com.vladsch.flexmark.util.Pair<String, String> collectAndCheckHighlighting(@NotNull LightFixtureSpecRenderer<?> specRenderer, @NotNull ExpectedHighlightingData data, boolean checkLineMarkers) {
+    default com.vladsch.flexmark.util.misc.Pair<String, String> collectAndCheckHighlighting(@NotNull LightFixtureSpecRenderer<?> specRenderer, @NotNull ExpectedHighlightingData data, boolean checkLineMarkers) {
         final Project project = getProject();
         EdtTestUtil.runInEdtAndWait(() -> PsiDocumentManager.getInstance(project).commitAllDocuments());
 
@@ -573,7 +573,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         }
 
         ObjectUtils.reachabilityFence(hardRefToFileElement);
-        return com.vladsch.flexmark.util.Pair.of(actualInspection, actualLineMarkers);
+        return com.vladsch.flexmark.util.misc.Pair.of(actualInspection, actualLineMarkers);
     }
 
     default void defaultTestCase() {
