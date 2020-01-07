@@ -186,6 +186,9 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
             BasedSegmentBuilder builder = BasedSegmentBuilder.emptyBuilder(result.getBaseSequence());
             result.addSegments(builder);
             out.append(builder.toStringWithRanges());
+
+            CodeInsightFixtureSpecTestCase.appendBannerIfNeeded(out, CodeInsightFixtureSpecTestCase.BANNER_SEGMENTS);
+            out.append(builder.toString()).append("\n");
         }
     }
 
