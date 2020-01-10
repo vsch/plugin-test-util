@@ -34,6 +34,7 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
     DataKey<String> CLIPBOARD_TEXT = new DataKey<>("CLIPBOARD_TEXT", "");
     DataKey<String> CLIPBOARD_FILE_URL = new DataKey<>("CLIPBOARD_FILE_URL", "");
     DataKey<String> INJECTED_TEXT = new DataKey<>("INJECTED_TEXT", "");
+    DataKey<Integer> ACTION_REPEAT = new DataKey<>("ACTION_REPEAT", 1);
     String TYPE_ACTION = "type";
     String SKIP_ACTION = "no-op";
 
@@ -53,9 +54,15 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
                 optionsMap.put("clipboard", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureActionSpecTest::clipboardOption)));
                 optionsMap.put("clipboard-file-url", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureActionSpecTest::clipboardFileUrl)));
                 optionsMap.put("inject", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customStringOption(option, params, LightFixtureActionSpecTest::injectOption)));
+                optionsMap.put("repeat", new MutableDataSet().set(TestUtils.CUSTOM_OPTION, (option, params) -> TestUtils.customIntOption(option, params, LightFixtureActionSpecTest::repeatOption)));
             }
             return optionsMap;
         }
+    }
+
+    static DataHolder repeatOption(@Nullable Integer params) {
+        int value = params != null ? params : 1;
+        return new MutableDataSet().set(ACTION_REPEAT, value);
     }
 
     static DataHolder injectOption(@Nullable String params) {

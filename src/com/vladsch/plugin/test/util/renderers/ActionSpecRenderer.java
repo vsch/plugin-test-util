@@ -38,6 +38,7 @@ import com.intellij.psi.impl.source.tree.injected.InjectedLanguageUtil;
 import com.intellij.util.ui.TextTransferable;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
 import com.vladsch.flexmark.util.data.DataHolder;
+import com.vladsch.flexmark.util.sequence.RepeatedSequence;
 import com.vladsch.plugin.test.util.TestIdeActions;
 import com.vladsch.plugin.test.util.cases.CodeInsightFixtureSpecTestCase;
 import com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest;
@@ -50,6 +51,7 @@ import java.util.List;
 
 import static com.vladsch.plugin.test.util.TestIdeActions.inject;
 import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.ACTION_NAME;
+import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.ACTION_REPEAT;
 import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.CLIPBOARD_FILE_URL;
 import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.CLIPBOARD_TEXT;
 import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.SKIP_ACTION;
@@ -248,15 +250,25 @@ public class ActionSpecRenderer<T extends LightFixtureActionSpecTest> extends Li
                     CopyPasteManager.getInstance().setContents(transferable);
                 }
 
+                int repeat = ACTION_REPEAT.get(myOptions);
+                assert repeat >= 0 : "ACTION_REPEAT should be >= 0";
+
                 if (action.equals(TYPE_ACTION)) {
                     String text = TYPE_ACTION_TEXT.get(myOptions);
                     if (!text.isEmpty()) {
-                        type(text);
+                        if (repeat > 1) {
+                            type(RepeatedSequence.repeatOf(text, repeat).toString());
+                        } else {
+                            type(text);
+                        }
                     } else {
                         assertEquals(getExample().getFileUrlWithLineNumber() + "\nTYPE_ACTION_TEXT cannot be empty for TYPE_ACTION", "text to type", "");
                     }
                 } else {
-                    executeRendererAction(action);
+                    int i = repeat;
+                    while (i-- > 0) {
+                        executeRendererAction(action);
+                    }
                 }
             } catch (Throwable t) {
                 html.append(t.getMessage()).append("\n");
