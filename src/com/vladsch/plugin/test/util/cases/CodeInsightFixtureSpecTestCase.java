@@ -179,7 +179,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         String documentText = myDocument.getText();
         for (LineMarkerInfo expectedLineMarker : lineMarkerInfos) {
             String lineMarkerTooltip = expectedLineMarker.getLineMarkerTooltip();
-            result.append(documentText, index, expectedLineMarker.startOffset)
+            result.append(documentText, Math.min(index, expectedLineMarker.startOffset), expectedLineMarker.startOffset)
                     .append("<lineMarker ")
                     .append("icon=\"").append(iconResolver.apply(expectedLineMarker.getIcon())).append("\" ")
                     // NOTE: escaping HTML hides the HTML used for markup so only double quotes are escaped
