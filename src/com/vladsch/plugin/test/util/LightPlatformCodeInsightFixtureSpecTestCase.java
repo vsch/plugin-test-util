@@ -61,8 +61,6 @@ import static org.junit.rules.ExpectedException.none;
 
 @RunWith(value = Parameterized.class)
 public abstract class LightPlatformCodeInsightFixtureSpecTestCase extends LightPlatformCodeInsightFixtureTestCase implements CodeInsightFixtureSpecTestCase {
-//    private static final Logger LOG = getInstance("com.vladsch.idea.multimarkdown.intentions");
-
     @Before
     public void before() throws Throwable {
         setUp();
