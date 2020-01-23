@@ -175,7 +175,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     protected void renderQuickFixesText(StringBuilder out) {
         List<IntentionAction> intentions = getAllQuickFixes();
         for (IntentionAction intention : intentions) {
-            out.append("Intention:[").append(intention.getText()).append("]\" ]\n");
+            out.append("intention[").append(intention.getText()).append("]\n");
         }
     }
 
