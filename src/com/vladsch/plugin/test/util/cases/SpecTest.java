@@ -15,6 +15,7 @@
 
 package com.vladsch.plugin.test.util.cases;
 
+import com.intellij.openapi.util.Key;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.vladsch.flexmark.test.util.SettableInstance;
 import com.vladsch.flexmark.test.util.SpecExampleProcessor;

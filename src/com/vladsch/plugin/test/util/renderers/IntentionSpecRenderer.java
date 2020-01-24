@@ -17,6 +17,7 @@ package com.vladsch.plugin.test.util.renderers;
 
 import com.intellij.codeInsight.intention.IntentionAction;
 import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.psi.PsiFile;
 import com.intellij.util.Function;
 import com.intellij.util.containers.ContainerUtil;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
@@ -25,12 +26,14 @@ import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.plugin.test.util.cases.CodeInsightFixtureSpecTestCase;
 import com.vladsch.plugin.test.util.cases.LightFixtureIntentionSpecTest;
 import com.vladsch.plugin.test.util.cases.SpecTest;
+import com.vladsch.plugin.util.TestUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 public class IntentionSpecRenderer<T extends LightFixtureIntentionSpecTest> extends ActionSpecRenderer<T> {
+
     public IntentionSpecRenderer(@NotNull T specTestBase, @NotNull SpecExample example, @Nullable DataHolder options) {
         super(specTestBase, example, options);
     }
@@ -57,6 +60,12 @@ public class IntentionSpecRenderer<T extends LightFixtureIntentionSpecTest> exte
     @NotNull
     @Override
     public String renderHtml() {
+        PsiFile file = getFile();
+        if (file != null) {
+            String[] strings = LightFixtureIntentionSpecTest.INSPECTION_OPTIONS.get(myOptions);
+            file.putUserData(TestUtils.TEST_INTENTION_OPTIONS, strings);
+        }
+
         getFixture().enableInspections(LightFixtureIntentionSpecTest.INSPECTION_CLASSES.get(myOptions));
 
         String intentionAction = LightFixtureIntentionSpecTest.INTENTION_ACTION.get(myOptions);

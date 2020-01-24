@@ -30,7 +30,9 @@ import java.util.Map;
 
 public interface LightFixtureIntentionSpecTest extends LightFixtureActionSpecTest {
     Class<? extends LocalInspectionTool>[] EMPTY_CLASSES = new Class[0];
+    String[] EMPTY_OPTIONS = new String[0];
     DataKey<Class<? extends LocalInspectionTool>[]> INSPECTION_CLASSES = new DataKey<>("INSPECTION_CLASSES", EMPTY_CLASSES);
+    DataKey<String[]> INSPECTION_OPTIONS = new DataKey<>("INSPECTION_OPTIONS", EMPTY_OPTIONS);
     DataKey<String> INTENTION_ACTION = new DataKey<>("INTENTION_ACTION", "");
     NullableDataKey<String> FILE_PARAM = new NullableDataKey<>("FILE_PARAM", (String) null);
 
