@@ -23,6 +23,7 @@ import com.vladsch.flexmark.test.util.TestUtils;
 import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.DataKey;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.vladsch.flexmark.util.misc.CharPredicate;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 import com.vladsch.flexmark.util.sequence.SequenceUtils;
 import com.vladsch.plugin.test.util.AdditionalProjectFiles;
@@ -89,7 +90,7 @@ public interface SpecTest extends SpecExampleProcessor {
     static DataHolder debugLogOption(@Nullable String params) {
         if (params != null) {
             BasedSequence basedParams = BasedSequence.of(params);
-            List<BasedSequence> list = basedParams.splitList(",", 0, SequenceUtils.SPLIT_TRIM_SKIP_EMPTY, SequenceUtils.WHITESPACE_NBSP_SET);
+            List<BasedSequence> list = basedParams.splitList(",", 0, SequenceUtils.SPLIT_TRIM_SKIP_EMPTY, CharPredicate.WHITESPACE_NBSP);
             return new MutableDataSet().set(DEBUG_LOG_SETTINGS, it -> it.trace(list));
         }
 
