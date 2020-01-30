@@ -19,6 +19,7 @@ import com.intellij.injected.editor.DocumentWindow;
 import com.intellij.lang.injection.InjectedLanguageManager;
 import com.intellij.openapi.application.ReadAction;
 import com.intellij.openapi.command.WriteCommandAction;
+import com.intellij.openapi.editor.CaretStateTransferableData;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.editor.Editor;
 import com.intellij.openapi.fileEditor.FileDocumentManager;
@@ -47,11 +48,16 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.awt.Toolkit;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.datatransfer.UnsupportedFlavorException;
+import java.io.IOException;
 import java.util.List;
 
 import static com.vladsch.plugin.test.util.TestIdeActions.inject;
 import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.ACTION_NAME;
 import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.ACTION_REPEAT;
+import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.CLIPBOARD_CONTENT;
 import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.CLIPBOARD_FILE_URL;
 import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.CLIPBOARD_TEXT;
 import static com.vladsch.plugin.test.util.cases.LightFixtureActionSpecTest.SKIP_ACTION;
@@ -287,6 +293,36 @@ public class ActionSpecRenderer<T extends LightFixtureActionSpecTest> extends Li
 
         Editor editor = getResultEditor();
         html.append(getResultTextWithMarkup(editor, true, false));
+
+        if (CLIPBOARD_CONTENT.get(myOptions)) {
+            // show clipboard text
+            Transferable transferable = CopyPasteManager.getInstance().getContents();
+            if (transferable != null) {
+                CodeInsightFixtureSpecTestCase.appendBannerIfNeeded(html, CodeInsightFixtureSpecTestCase.BANNER_CLIPBOARD);
+                if (transferable.isDataFlavorSupported(CaretStateTransferableData.FLAVOR)) {
+                    // FIX: add code to include caret information
+                    try {
+                        String textData = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+                        html.append(textData);
+                        if (!textData.endsWith("\n")) {
+                            html.append("\n");
+                        }
+                    } catch (UnsupportedFlavorException | IOException e) {
+                        e.printStackTrace();
+                    }
+                } else if (transferable.isDataFlavorSupported(DataFlavor.stringFlavor)) {
+                    try {
+                        String textData = (String) transferable.getTransferData(DataFlavor.stringFlavor);
+                        html.append(textData);
+                        if (!textData.endsWith("\n")) {
+                            html.append("\n");
+                        }
+                    } catch (UnsupportedFlavorException | IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
 
         mySpecTest.renderTesActionHtml(html, this, myOptions);
 

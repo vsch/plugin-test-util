@@ -35,6 +35,7 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
     DataKey<String> CLIPBOARD_FILE_URL = new DataKey<>("CLIPBOARD_FILE_URL", "");
     DataKey<String> INJECTED_TEXT = new DataKey<>("INJECTED_TEXT", "");
     DataKey<Integer> ACTION_REPEAT = new DataKey<>("ACTION_REPEAT", 1);
+    DataKey<Boolean> CLIPBOARD_CONTENT = new DataKey<>("CLIPBOARD_CONTENT", false);
     String TYPE_ACTION = "type";
     String SKIP_ACTION = "no-op";
 
@@ -45,6 +46,7 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
             if (optionsMap.isEmpty()) {
                 optionsMap.put("type-comma", new MutableDataSet().set(ACTION_NAME, ","));
                 optionsMap.put("backspace", new MutableDataSet().set(ACTION_NAME, backspace));
+                optionsMap.put("show-clipboard", new MutableDataSet().set(CLIPBOARD_CONTENT, true));
                 optionsMap.put("enter", new MutableDataSet().set(ACTION_NAME, enter));
                 optionsMap.put("copy", new MutableDataSet().set(ACTION_NAME, copy));
                 optionsMap.put("paste", new MutableDataSet().set(ACTION_NAME, paste));
@@ -84,7 +86,9 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
     /**
      * Copy the additional file virtual file URL given by file name in the option's text, with additional text appended from
      * clipboard[] option text. The latter can be used to add ref-anchor to the URL
+     *
      * @param params text
+     *
      * @return data
      */
     static DataHolder clipboardFileUrl(@Nullable String params) {

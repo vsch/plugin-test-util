@@ -109,6 +109,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     String BANNER_AST_BEFORE_ACTION = bannerText("AST Before Action");
     String BANNER_QUICK_FIXES = bannerText("QUICK_FIXES");
     String BANNER_RANGES = bannerText("RANGES");
+    String BANNER_CLIPBOARD = bannerText("CLIPBOARD");
     String BANNER_SEGMENTS = bannerText("SEGMENTS");
     String BANNER_AFTER_ACTION = bannerText("After Action");
     String BANNER_BEFORE_ACTION = bannerText("Before Action");
