@@ -495,7 +495,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     @NotNull public String getTestDirectoryName() {return mySpecTest.getTestDirectoryName();}
     public boolean isPerformanceTest() {return mySpecTest.isPerformanceTest();}
     public boolean isStressTest() {return mySpecTest.isStressTest();}
-    public void assertException(@NotNull AbstractExceptionCase<?> exceptionCase) {mySpecTest.assertException(exceptionCase);}
+    //public void assertException(@NotNull AbstractExceptionCase<?> exceptionCase) {mySpecTest.assertException(exceptionCase);}
     public void assertException(@NotNull AbstractExceptionCase exceptionCase, @Nullable String expectedErrorMsg) {mySpecTest.assertException(exceptionCase, expectedErrorMsg);}
     public <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T {mySpecTest.assertNoException(exceptionCase);}
     public void assertNoThrowable(@NotNull Runnable closure) {mySpecTest.assertNoThrowable(closure);}

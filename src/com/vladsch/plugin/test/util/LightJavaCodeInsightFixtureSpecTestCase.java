@@ -145,7 +145,7 @@ public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaC
     @NotNull @Override final public String getTestDirectoryName() { return super.getTestDirectoryName();}
     @Override final public boolean isPerformanceTest() { return super.isPerformanceTest();}
     @Override final public boolean isStressTest() { return super.isStressTest();}
-    @Override final public void assertException(@NotNull AbstractExceptionCase<?> exceptionCase) { super.assertException(exceptionCase);}
+    @Override final public void assertException(@NotNull AbstractExceptionCase exceptionCase) { super.assertException(exceptionCase);}
     @Override final public void assertException(@NotNull AbstractExceptionCase exceptionCase, @Nullable String expectedErrorMsg) { super.assertException(exceptionCase, expectedErrorMsg);}
     @Override final public <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T { super.assertNoException(exceptionCase);}
     @Override final public void assertNoThrowable(@NotNull Runnable closure) { super.assertNoThrowable(closure);}

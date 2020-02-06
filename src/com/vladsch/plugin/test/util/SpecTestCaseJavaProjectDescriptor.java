@@ -77,7 +77,6 @@ public class SpecTestCaseJavaProjectDescriptor extends LightProjectDescriptor {
     }
 
     @NotNull
-    @Override
     public String getModuleTypeId() {
         return ModuleTypeId.JAVA_MODULE;
     }

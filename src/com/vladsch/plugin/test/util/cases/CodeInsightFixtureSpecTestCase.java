@@ -461,9 +461,9 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     boolean isStressTest();
 
-    void assertException(@NotNull AbstractExceptionCase<?> exceptionCase);
+    void assertException(@NotNull AbstractExceptionCase exceptionCase);
 
-    void assertException(@NotNull AbstractExceptionCase<?> exceptionCase, @Nullable String expectedErrorMsg);
+    void assertException(@NotNull AbstractExceptionCase exceptionCase, @Nullable String expectedErrorMsg);
 
     <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T;
 
