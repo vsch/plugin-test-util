@@ -17,6 +17,7 @@ package com.vladsch.plugin.test.util;
 
 import com.intellij.diagnostic.DebugLogManager;
 import com.vladsch.flexmark.util.collection.iteration.ArrayIterable;
+import kotlin.Pair;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -62,10 +63,10 @@ public final class DebugLogSettings {
         return this;
     }
 
-    public List<DebugLogManager.Category> getLogCategories() {
-        List<DebugLogManager.Category> categories = new ArrayList<>();
+    public List<Pair<String, DebugLogManager.DebugLogLevel>> getLogCategories() {
+        List<Pair<String, DebugLogManager.DebugLogLevel>> categories = new ArrayList<>();
         for (Map.Entry<String, DebugLogManager.DebugLogLevel> entry : myOptions.entrySet()) {
-            categories.add(new DebugLogManager.Category(entry.getKey(), entry.getValue()));
+            categories.add(new Pair<>(entry.getKey(), entry.getValue()));
         }
         return categories;
     }

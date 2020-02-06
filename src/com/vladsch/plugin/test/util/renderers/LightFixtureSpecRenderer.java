@@ -78,6 +78,7 @@ import com.vladsch.plugin.util.PsiTreeAstRenderer;
 import com.vladsch.plugin.util.TestUtils;
 import gnu.trove.Equality;
 import junit.framework.TestCase;
+import kotlin.Pair;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -103,7 +104,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
 
     protected final StringBuilder ast = new StringBuilder();
     protected final StringBuilder html = new StringBuilder();
-    private List<DebugLogManager.Category> mySavedCategories;
+    private List<Pair<String, DebugLogManager.DebugLogLevel>> mySavedCategories;
     private DebugLogSettings myDebugLogSettings;
 
     public LightFixtureSpecRenderer(@NotNull T specTest, @NotNull SpecExample example, @Nullable DataHolder options) {
@@ -418,7 +419,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     @NotNull public Collection<UsageInfo> testFindUsages(@NotNull String... fileNames) {return getFixture().testFindUsages(fileNames);}
     @NotNull public Collection<Usage> testFindUsagesUsingAction(@NotNull String... fileNames) {return getFixture().testFindUsagesUsingAction(fileNames);}
     @NotNull public Collection<UsageInfo> findUsages(@NotNull PsiElement to) {return getFixture().findUsages(to);}
-    @NotNull public String getUsageViewTreeTextRepresentation(@NotNull Collection<? extends UsageInfo> usages) {return getFixture().getUsageViewTreeTextRepresentation(usages);}
+    //@NotNull public String getUsageViewTreeTextRepresentation(@NotNull Collection<? extends UsageInfo> usages) {return getFixture().getUsageViewTreeTextRepresentation(usages);}
     @NotNull public String getUsageViewTreeTextRepresentation(@NotNull PsiElement to) {return getFixture().getUsageViewTreeTextRepresentation(to);}
     @NotNull public RangeHighlighter[] testHighlightUsages(@NotNull String... files) {return getFixture().testHighlightUsages(files);}
     public void moveFile(@NotNull String filePath, @NotNull String to, @NotNull String... additionalFiles) {getFixture().moveFile(filePath, to, additionalFiles);}
@@ -478,10 +479,10 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public PsiManager getPsiManager() {return mySpecTest.getPsiManager();}
     public PsiFile createLightFile(FileType fileType, String text) {return mySpecTest.createLightFile(fileType, text);}
     public PsiFile createLightFile(String fileName, Language language, String text) {return mySpecTest.createLightFile(fileName, language, text);}
-    @NotNull public Module getModule() {return mySpecTest.getModule();}
+    //@NotNull public Module getModule() {return mySpecTest.getModule();}
     public void addSuppressedException(@NotNull Throwable e) {mySpecTest.addSuppressedException(e);}
     public boolean shouldContainTempFiles() {return mySpecTest.shouldContainTempFiles();}
-    public boolean isIconRequired() {return mySpecTest.isIconRequired();}
+    //public boolean isIconRequired() {return mySpecTest.isIconRequired();}
     public void addTmpFileToKeep(@NotNull File file) {mySpecTest.addTmpFileToKeep(file);}
     @NotNull public Disposable getTestRootDisposable() {return mySpecTest.getTestRootDisposable();}
     public boolean shouldRunTest() {return mySpecTest.shouldRunTest();}

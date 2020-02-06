@@ -422,14 +422,14 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     PsiFile createLightFile(String fileName, Language language, String text);
 
-    @NotNull
-    Module getModule();
+    //@NotNull
+    //Module getModule();
 
     void addSuppressedException(@NotNull Throwable e);
 
     boolean shouldContainTempFiles();
 
-    boolean isIconRequired();
+    //boolean isIconRequired();
 
     void addTmpFileToKeep(@NotNull File file);
 

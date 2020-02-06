@@ -157,10 +157,10 @@ public abstract class LightPlatformCodeInsightFixtureSpecTestCase extends LightP
     @Override final public PsiManager getPsiManager() { return super.getPsiManager();}
     @Override final public PsiFile createLightFile(FileType fileType, String text) { return super.createLightFile(fileType, text);}
     @Override final public PsiFile createLightFile(String fileName, Language language, String text) { return super.createLightFile(fileName, language, text);}
-    @NotNull @Override final public Module getModule() { return super.getModule();}
+    //@NotNull @Override final public Module getModule() { return super.getModule();}
     @Override final public void addSuppressedException(@NotNull Throwable e) { super.addSuppressedException(e);}
     @Override final public boolean shouldContainTempFiles() { return super.shouldContainTempFiles();}
-    @Override final public boolean isIconRequired() { return super.isIconRequired();}
+    //@Override final public boolean isIconRequired() { return super.isIconRequired();}
     @Override final public void addTmpFileToKeep(@NotNull File file) { super.addTmpFileToKeep(file);}
     @NotNull @Override final public Disposable getTestRootDisposable() { return super.getTestRootDisposable();}
     @Override final public boolean shouldRunTest() { return super.shouldRunTest();}

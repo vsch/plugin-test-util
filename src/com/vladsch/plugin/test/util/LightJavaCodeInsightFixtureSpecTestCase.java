@@ -28,8 +28,9 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.exceptionCases.AbstractExceptionCase;
+import com.intellij.testFramework.fixtures.CodeInsightFixtureTestCase;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
-import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase;
+import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import com.intellij.testFramework.fixtures.TempDirTestFixture;
 import com.intellij.util.ThrowableRunnable;
 import com.vladsch.flexmark.test.util.TestUtils;
@@ -56,7 +57,7 @@ import java.util.Map;
 import static org.junit.rules.ExpectedException.none;
 
 @RunWith(value = Parameterized.class)
-public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaCodeInsightFixtureTestCase implements CodeInsightFixtureSpecTestCase {
+public abstract class LightJavaCodeInsightFixtureSpecTestCase extends CodeInsightFixtureTestCase implements CodeInsightFixtureSpecTestCase {
     @Before
     public void before() throws Throwable {
         setUp();
@@ -93,11 +94,11 @@ public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaC
         return TestUtils.processOption(myOptionsMap, option);
     }
 
-    @NotNull
-    @Override
-    protected LightProjectDescriptor getProjectDescriptor() {
-        return new SpecTestCaseJavaProjectDescriptor(LanguageLevel.JDK_1_8);
-    }
+    //@NotNull
+    //@Override
+    //protected LightProjectDescriptor getProjectDescriptor() {
+    //    return new SpecTestCaseJavaProjectDescriptor(LanguageLevel.JDK_1_8);
+    //}
 
     @Test
     final public void test_case() {
@@ -121,17 +122,17 @@ public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaC
 
     // Light platform/java methods pulled up to CodeInsightFixtureSpecTestCase
     // @formatter:off
-    @Override final public PsiElementFactory getElementFactory() { return super.getElementFactory();}
-    @Override @NotNull final public TempDirTestFixture getTempDirFixture() {return super.getTempDirFixture();}
+    //@Override final public PsiElementFactory getElementFactory() { return super.getElementFactory();}
+    //@Override @NotNull final public TempDirTestFixture getTempDirFixture() {return super.getTempDirFixture();}
 
     @Override final public Project getProject() { return super.getProject();}
-    @Override final public PsiManager getPsiManager() { return super.getPsiManager();}
-    @Override final public PsiFile createLightFile(FileType fileType, String text) { return super.createLightFile(fileType, text);}
-    @Override final public PsiFile createLightFile(String fileName, Language language, String text) { return super.createLightFile(fileName, language, text);}
-    @NotNull @Override final public Module getModule() { return super.getModule();}
+    //@Override final public PsiManager getPsiManager() { return super.getPsiManager();}
+    //@Override final public PsiFile createLightFile(FileType fileType, String text) { return super.createLightFile(fileType, text);}
+    //@Override final public PsiFile createLightFile(String fileName, Language language, String text) { return super.createLightFile(fileName, language, text);}
+    //@NotNull @Override final public Module getModule() { return super.getModule();}
     @Override final public void addSuppressedException(@NotNull Throwable e) { super.addSuppressedException(e);}
     @Override final public boolean shouldContainTempFiles() { return super.shouldContainTempFiles();}
-    @Override final public boolean isIconRequired() { return super.isIconRequired();}
+    //@Override final public boolean isIconRequired() { return super.isIconRequired();}
     @Override final public void addTmpFileToKeep(@NotNull File file) { super.addTmpFileToKeep(file);}
     @NotNull @Override final public Disposable getTestRootDisposable() { return super.getTestRootDisposable();}
     @Override final public boolean shouldRunTest() { return super.shouldRunTest();}
