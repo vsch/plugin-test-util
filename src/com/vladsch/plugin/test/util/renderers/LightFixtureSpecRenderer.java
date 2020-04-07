@@ -63,8 +63,8 @@ import com.intellij.util.ThrowableRunnable;
 import com.vladsch.flexmark.test.util.SpecExampleRendererBase;
 import com.vladsch.flexmark.test.util.spec.ResourceLocation;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
-import com.vladsch.flexmark.util.misc.Utils;
 import com.vladsch.flexmark.util.data.DataHolder;
+import com.vladsch.flexmark.util.misc.Utils;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 import com.vladsch.flexmark.util.sequence.Range;
 import com.vladsch.flexmark.util.sequence.builder.BasedSegmentBuilder;
@@ -271,7 +271,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
         CodeStyleSettingsManager.getInstance(getProject()).setTemporarySettings(myCodeStyleSettings);
 
         // allow customization of initialization
-        mySpecTest.initializeRenderer(this, myOptions);
+        mySpecTest.initializeRenderer(this);
 
         SpecTest.ADDITIONAL_PROJECT_FILES_OPTION.setInstanceData(myAdditionalProjectFiles, myOptions);
 
@@ -306,7 +306,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
 
         // CAUTION: getting document char sequence seems to be needed, without it some tests have document content reverted to original after action has modified it
         //   causing tests to fail and caret offsets to be out of sync with content and offset > textLength()
-        getEditor().getDocument().getCharsSequence();
+        CharSequence dummy = getEditor().getDocument().getCharsSequence();
         //LOG.debug(String.format("Created example file %s '%s' %d", getExampleFileName(myExample), Utils.escapeJavaString(getEditor().getDocument().getCharsSequence()), getEditor().getDocument().getModificationStamp()));
     }
 
