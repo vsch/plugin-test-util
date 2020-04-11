@@ -71,6 +71,7 @@ import com.vladsch.flexmark.util.sequence.builder.BasedSegmentBuilder;
 import com.vladsch.plugin.test.util.AdditionalProjectFiles;
 import com.vladsch.plugin.test.util.DebugLogSettings;
 import com.vladsch.plugin.test.util.IntentionInfo;
+import com.vladsch.plugin.test.util.SpecTestSetup;
 import com.vladsch.plugin.test.util.cases.CodeInsightFixtureSpecTestCase;
 import com.vladsch.plugin.test.util.cases.SpecTest;
 import com.vladsch.plugin.util.AppUtils;
@@ -308,6 +309,9 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
         //   causing tests to fail and caret offsets to be out of sync with content and offset > textLength()
         CharSequence dummy = getEditor().getDocument().getCharsSequence();
         //LOG.debug(String.format("Created example file %s '%s' %d", getExampleFileName(myExample), Utils.escapeJavaString(getEditor().getDocument().getCharsSequence()), getEditor().getDocument().getModificationStamp()));
+        
+        // Allow customizing file data for test
+        SpecTestSetup.CUSTOMIZE_FILE_OPTION.setInstanceData(getFile(), myOptions);
     }
 
     @Override

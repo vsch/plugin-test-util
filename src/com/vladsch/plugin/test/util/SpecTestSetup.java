@@ -15,6 +15,7 @@
 
 package com.vladsch.plugin.test.util;
 
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.vladsch.flexmark.test.util.SettableInstance;
 import com.vladsch.flexmark.util.data.DataHolder;
@@ -40,6 +41,9 @@ public class SpecTestSetup {
 
     final static public DataKey<Consumer<DebugLogSettings>> DEBUG_LOG_SETTINGS = new DataKey<>("DEBUG_LOG_SETTINGS", (it) -> {});
     final public static SettableInstance<DebugLogSettings> DEBUG_LOG_SETTINGS_OPTION = new SettableInstance<>(DEBUG_LOG_SETTINGS);
+    
+    final static public DataKey<Consumer<PsiFile>> CUSTOMIZE_FILE = new DataKey<>("CUSTOMIZE_FILE", (it) -> { });
+    final public static SettableInstance<PsiFile> CUSTOMIZE_FILE_OPTION = new SettableInstance<>(CUSTOMIZE_FILE);
 
     // @formatter:on
 
@@ -62,6 +66,7 @@ public class SpecTestSetup {
             combined = ADDITIONAL_PROJECT_FILES_OPTION.aggregateActions(combined, other, overrides);
             combined = LINE_MARKER_SETTINGS_OPTION.aggregateActions(combined, other, overrides);
             combined = DEBUG_LOG_SETTINGS_OPTION.aggregateActions(combined, other, overrides);
+            combined = CUSTOMIZE_FILE_OPTION.aggregateActions(combined, other, overrides);
             return combined;
         }
 
