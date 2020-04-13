@@ -71,6 +71,7 @@ import com.vladsch.flexmark.util.sequence.builder.BasedSegmentBuilder;
 import com.vladsch.plugin.test.util.AdditionalProjectFiles;
 import com.vladsch.plugin.test.util.DebugLogSettings;
 import com.vladsch.plugin.test.util.IntentionInfo;
+import com.vladsch.plugin.test.util.SpecTestSetup;
 import com.vladsch.plugin.test.util.cases.CodeInsightFixtureSpecTestCase;
 import com.vladsch.plugin.test.util.cases.SpecTest;
 import com.vladsch.plugin.util.AppUtils;
@@ -272,7 +273,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
         CodeStyleSettingsManager.getInstance(getProject()).setTemporarySettings(myCodeStyleSettings);
 
         // allow customization of initialization
-        mySpecTest.initializeRenderer(this, myOptions);
+        mySpecTest.initializeRenderer(this);
 
         SpecTest.ADDITIONAL_PROJECT_FILES_OPTION.setInstanceData(myAdditionalProjectFiles, myOptions);
 
@@ -307,8 +308,11 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
 
         // CAUTION: getting document char sequence seems to be needed, without it some tests have document content reverted to original after action has modified it
         //   causing tests to fail and caret offsets to be out of sync with content and offset > textLength()
-        getEditor().getDocument().getCharsSequence();
+        CharSequence dummy = getEditor().getDocument().getCharsSequence();
         //LOG.debug(String.format("Created example file %s '%s' %d", getExampleFileName(myExample), Utils.escapeJavaString(getEditor().getDocument().getCharsSequence()), getEditor().getDocument().getModificationStamp()));
+        
+        // Allow customizing file data for test
+        SpecTestSetup.CUSTOMIZE_FILE_OPTION.setInstanceData(getFile(), myOptions);
     }
 
     @Override

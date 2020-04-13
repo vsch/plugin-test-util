@@ -316,7 +316,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     /**
      * Load extra settings and initialize spec renderer for parse
      */
-    <T extends CodeInsightFixtureSpecTestCase> void initializeRenderer(@NotNull LightFixtureSpecRenderer<T> specRenderer, @NotNull DataHolder specRendererOptions);
+    <T extends CodeInsightFixtureSpecTestCase> void initializeRenderer(@NotNull LightFixtureSpecRenderer<T> specRenderer);
 
     /**
      * Reset extra settings for next test and clean up any resources
@@ -331,12 +331,8 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     @NotNull
     @Override
     default LightFixtureSpecRenderer<?> getSpecExampleRenderer(@NotNull SpecExample example, @Nullable DataHolder exampleOptions) {
-        if (exampleOptions == null) {
-            return createExampleSpecRenderer(example, getDefaultOptions());
-        } else {
-            DataHolder options = DataSet.aggregate(getDefaultOptions(), exampleOptions);
-            return createExampleSpecRenderer(example, options);
-        }
+        DataHolder options = exampleOptions == null ? getDefaultOptions() : DataSet.aggregate(getDefaultOptions(), exampleOptions);
+        return createExampleSpecRenderer(example, options);
     }
 
     default VirtualFile createImageFile(String fileName, InputStream content) {
