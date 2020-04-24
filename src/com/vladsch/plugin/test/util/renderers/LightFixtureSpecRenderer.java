@@ -27,6 +27,7 @@ import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ex.InspectionToolWrapper;
 import com.intellij.diagnostic.DebugLogManager;
 import com.intellij.ide.structureView.newStructureView.StructureViewComponent;
+import com.intellij.injected.editor.EditorWindow;
 import com.intellij.lang.Language;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.Disposable;
@@ -49,7 +50,6 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
-import com.intellij.psi.impl.source.tree.injected.InjectedLanguageUtil;
 import com.intellij.psi.util.PsiUtilBase;
 import com.intellij.testFramework.HighlightTestInfo;
 import com.intellij.testFramework.UsefulTestCase;
@@ -134,7 +134,8 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
 
     @NotNull
     protected Editor getHostEditor() {
-        return InjectedLanguageUtil.getTopLevelEditor(getEditor());
+        Editor editor = getEditor();
+        return editor instanceof EditorWindow ? ((EditorWindow) editor).getDelegate() : editor;
     }
 
     protected PsiFile getHostFileAtCaret() {
@@ -309,7 +310,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
         //   causing tests to fail and caret offsets to be out of sync with content and offset > textLength()
         CharSequence dummy = getEditor().getDocument().getCharsSequence();
         //LOG.debug(String.format("Created example file %s '%s' %d", getExampleFileName(myExample), Utils.escapeJavaString(getEditor().getDocument().getCharsSequence()), getEditor().getDocument().getModificationStamp()));
-        
+
         // Allow customizing file data for test
         SpecTestSetup.CUSTOMIZE_FILE_OPTION.setInstanceData(getFile(), myOptions);
     }
