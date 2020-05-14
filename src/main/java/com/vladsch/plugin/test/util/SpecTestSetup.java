@@ -82,10 +82,4 @@ public class SpecTestSetup {
             return null;
         }
     }
-
-    @SuppressWarnings("rawtypes")
-    public static Consumer chainConsumerDataKeys(DataKey<Consumer> dataKey, @NotNull DataHolder other, @NotNull DataHolder overrides) {
-        //noinspection unchecked
-        return dataKey.get(other).andThen(dataKey.get(overrides));
-    }
 }
