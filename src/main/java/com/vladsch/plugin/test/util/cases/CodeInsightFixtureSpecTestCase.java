@@ -502,7 +502,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
             boolean ignoreExtraHighlighting
     ) {
         ExpectedHighlightingData data = new ExpectedHighlightingData(
-                getEditor().getDocument(), checkWarnings, checkWeakWarnings, checkInfos, ignoreExtraHighlighting, getHostFile());
+                getEditor().getDocument(), checkWarnings, checkWeakWarnings, checkInfos, ignoreExtraHighlighting);
         data.init();
         return collectAndCheckHighlighting(specRenderer, data, checkLineMarkers);
     }
@@ -560,7 +560,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         String actualLineMarkers = "";
 
         try {
-            data.checkResult(infos, file.getText());
+            data.checkResult(file, infos, file.getText());
         } catch (ComparisonFailure cf) {
             actualInspection = cf.getActual();
         }
