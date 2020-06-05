@@ -160,7 +160,6 @@ public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsight
     @Override final public void defaultRunBare() throws Throwable { super.defaultRunBare();}
     @Override final public void runBare() throws Throwable { super.runBare();}
     @Override final public boolean runInDispatchThread() { return super.runInDispatchThread();}
-    @Override final public void edt(@NotNull ThrowableRunnable<Throwable> runnable) { super.edt(runnable);}
     @NotNull @Override final public <T extends Disposable> T disposeOnTearDown(@NotNull T disposable) { return super.disposeOnTearDown(disposable);}@NotNull
     @Override final public String getTestName(boolean lowercaseFirstLetter) { return super.getTestName(lowercaseFirstLetter);}
     @NotNull @Override final public String getTestDirectoryName() { return super.getTestDirectoryName();}

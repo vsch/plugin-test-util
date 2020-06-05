@@ -494,7 +494,6 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public void defaultRunBare() throws Throwable {mySpecTest.defaultRunBare();}
     public void runBare() throws Throwable {mySpecTest.runBare();}
     public boolean runInDispatchThread() {return mySpecTest.runInDispatchThread();}
-    public void edt(@NotNull ThrowableRunnable<Throwable> runnable) {mySpecTest.edt(runnable);}
     @NotNull public <T extends Disposable> T disposeOnTearDown(@NotNull T disposable) {return mySpecTest.disposeOnTearDown(disposable);}
     @NotNull public String getTestName(boolean lowercaseFirstLetter) {return mySpecTest.getTestName(lowercaseFirstLetter);}
     @NotNull public String getTestDirectoryName() {return mySpecTest.getTestDirectoryName();}

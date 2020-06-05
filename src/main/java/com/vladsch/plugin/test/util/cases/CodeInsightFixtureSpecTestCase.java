@@ -442,8 +442,6 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     boolean runInDispatchThread();
 
-    void edt(@NotNull ThrowableRunnable<Throwable> runnable);
-
     @NotNull
     <T extends Disposable> T disposeOnTearDown(@NotNull T disposable);
 
