@@ -93,6 +93,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -427,7 +428,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     boolean isIconRequired();
 
-    void addTmpFileToKeep(@NotNull File file);
+    void addTmpFileToKeep(@NotNull Path file);
 
     @NotNull
     Disposable getTestRootDisposable();

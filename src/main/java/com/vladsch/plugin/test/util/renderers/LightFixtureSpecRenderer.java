@@ -87,6 +87,7 @@ import javax.swing.KeyStroke;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -487,7 +488,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public void addSuppressedException(@NotNull Throwable e) {mySpecTest.addSuppressedException(e);}
     public boolean shouldContainTempFiles() {return mySpecTest.shouldContainTempFiles();}
     public boolean isIconRequired() {return mySpecTest.isIconRequired();}
-    public void addTmpFileToKeep(@NotNull File file) {mySpecTest.addTmpFileToKeep(file);}
+    public void addTmpFileToKeep(@NotNull Path file) {mySpecTest.addTmpFileToKeep(file);}
     @NotNull public Disposable getTestRootDisposable() {return mySpecTest.getTestRootDisposable();}
     public boolean shouldRunTest() {return mySpecTest.shouldRunTest();}
     public void invokeTestRunnable(@NotNull Runnable runnable) throws Exception {mySpecTest.invokeTestRunnable(runnable);}

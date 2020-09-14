@@ -50,6 +50,7 @@ import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -161,7 +162,7 @@ public abstract class LightPlatformCodeInsightFixtureSpecTestCase extends LightP
     @Override final public void addSuppressedException(@NotNull Throwable e) { super.addSuppressedException(e);}
     @Override final public boolean shouldContainTempFiles() { return super.shouldContainTempFiles();}
     @Override final public boolean isIconRequired() { return super.isIconRequired();}
-    @Override final public void addTmpFileToKeep(@NotNull File file) { super.addTmpFileToKeep(file);}
+    @Override final public void addTmpFileToKeep(@NotNull Path file) { super.addTmpFileToKeep(file);}
     @NotNull @Override final public Disposable getTestRootDisposable() { return super.getTestRootDisposable();}
     @Override final public boolean shouldRunTest() { return super.shouldRunTest();}
     @Override final public void invokeTestRunnable(@NotNull Runnable runnable) throws Exception { super.invokeTestRunnable(runnable);}
