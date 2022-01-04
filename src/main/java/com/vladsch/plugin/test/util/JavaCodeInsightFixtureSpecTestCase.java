@@ -40,15 +40,12 @@ import com.vladsch.plugin.test.util.cases.CodeInsightFixtureSpecTestCase;
 import com.vladsch.plugin.test.util.cases.SpecTest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -58,31 +55,20 @@ import static org.junit.rules.ExpectedException.none;
 
 @RunWith(value = Parameterized.class)
 public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsightFixtureTestCase implements CodeInsightFixtureSpecTestCase {
-
-    @Before
-    public void before() throws Throwable {
-        setUp();
-    }
-
-    @After
-    public void after() throws Throwable {
-        tearDown();
-    }
-
     @Override
     protected void tuneFixture(JavaModuleFixtureBuilder moduleBuilder) throws Exception {
         super.tuneFixture(moduleBuilder);
 
         //moduleBuilder.addJdk("/Applications/IntelliJ-IDEA-2019.3-CE-EAP.app/Contents/jbr/Contents/Home");
         moduleBuilder.setLanguageLevel(LanguageLevel.JDK_1_8);
-//        moduleBuilder.addLibrary("test_lib",
-//                "/Users/vlad/src/projects/idea-multimarkdown3/WebViewDebugSample/lib/annotations-18.0.0.jar"
-//                , "/Users/vlad/src/projects/idea-multimarkdown3/lib/flexmark-parent.jar"
-//                , "/Users/vlad/src/projects/idea-multimarkdown3/lib/flexmark-util.jar"
-//                , "/Users/vlad/src/projects/idea-multimarkdown3/lib/flexmark-test-util.jar"
-//                , "/Users/vlad/src/projects/plugin-test-util/lib/junit-4.12.jar"
-//                , "/Users/vlad/src/projects/plugin-test-util/lib/hamcrest-core-1.3.jar"
-//        );
+        //        moduleBuilder.addLibrary("test_lib",
+        //                "/Users/vlad/src/projects/idea-multimarkdown3/WebViewDebugSample/lib/annotations-18.0.0.jar"
+        //                , "/Users/vlad/src/projects/idea-multimarkdown3/lib/flexmark-parent.jar"
+        //                , "/Users/vlad/src/projects/idea-multimarkdown3/lib/flexmark-util.jar"
+        //                , "/Users/vlad/src/projects/idea-multimarkdown3/lib/flexmark-test-util.jar"
+        //                , "/Users/vlad/src/projects/plugin-test-util/lib/junit-4.12.jar"
+        //                , "/Users/vlad/src/projects/plugin-test-util/lib/hamcrest-core-1.3.jar"
+        //        );
     }
 
     @Override
@@ -116,10 +102,10 @@ public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsight
         return TestUtils.processOption(myOptionsMap, option);
     }
 
-//    @Nullable
-//    protected SpecTestCaseJavaProjectDescriptor getProjectDescriptor() {
-//        return null;
-//    }
+    //    @Nullable
+    //    protected SpecTestCaseJavaProjectDescriptor getProjectDescriptor() {
+    //        return null;
+    //    }
 
     @Test
     final public void test_case() {
@@ -154,12 +140,12 @@ public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsight
     @Override final public void addSuppressedException(@NotNull Throwable e) { super.addSuppressedException(e);}
     @Override final public boolean shouldContainTempFiles() { return super.shouldContainTempFiles();}
     @Override final public boolean isIconRequired() { return super.isIconRequired();}
-    @Override final public void addTmpFileToKeep(@NotNull Path file) { super.addTmpFileToKeep(file);}
+    @Override final public void addTmpFileToKeep(@NotNull Path file) { ((CodeInsightFixtureSpecTestCase)this).addTmpFileToKeep(file);}
     @NotNull @Override final public Disposable getTestRootDisposable() { return super.getTestRootDisposable();}
     @Override final public boolean shouldRunTest() { return super.shouldRunTest();}
-    @Override final public void invokeTestRunnable(@NotNull Runnable runnable) throws Exception { super.invokeTestRunnable(runnable);}
-    @Override final public void defaultRunBare() throws Throwable { super.defaultRunBare();}
-    @Override final public void runBare() throws Throwable { super.runBare();}
+    @Override final public void runTestRunnable(@NotNull ThrowableRunnable<Throwable> runnable) throws Throwable { super.runTestRunnable(runnable);}
+    @Override final public void defaultRunBare(@NotNull ThrowableRunnable<Throwable> testRunnable) throws Throwable { super.defaultRunBare(testRunnable);}
+    //@Override final public void runBare() throws Throwable { super.runBare();}
     @Override final public boolean runInDispatchThread() { return super.runInDispatchThread();}
     @NotNull @Override final public <T extends Disposable> T disposeOnTearDown(@NotNull T disposable) { return super.disposeOnTearDown(disposable);}@NotNull
     @Override final public String getTestName(boolean lowercaseFirstLetter) { return super.getTestName(lowercaseFirstLetter);}

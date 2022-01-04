@@ -53,7 +53,6 @@ import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
 import com.intellij.psi.util.PsiUtilBase;
 import com.intellij.testFramework.HighlightTestInfo;
 import com.intellij.testFramework.UsefulTestCase;
-import com.intellij.testFramework.exceptionCases.AbstractExceptionCase;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import com.intellij.testFramework.fixtures.TempDirTestFixture;
 import com.intellij.ui.components.breadcrumbs.Crumb;
@@ -491,8 +490,8 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public void addTmpFileToKeep(@NotNull Path file) {mySpecTest.addTmpFileToKeep(file);}
     @NotNull public Disposable getTestRootDisposable() {return mySpecTest.getTestRootDisposable();}
     public boolean shouldRunTest() {return mySpecTest.shouldRunTest();}
-    public void invokeTestRunnable(@NotNull Runnable runnable) throws Exception {mySpecTest.invokeTestRunnable(runnable);}
-    public void defaultRunBare() throws Throwable {mySpecTest.defaultRunBare();}
+    public void runTestRunnable(@NotNull ThrowableRunnable<Throwable> runnable) throws Throwable {mySpecTest.runTestRunnable(runnable);}
+    public void defaultRunBare(@NotNull ThrowableRunnable<Throwable> testRunnable) throws Throwable {mySpecTest.defaultRunBare(testRunnable);}
     public void runBare() throws Throwable {mySpecTest.runBare();}
     public boolean runInDispatchThread() {return mySpecTest.runInDispatchThread();}
     @NotNull public <T extends Disposable> T disposeOnTearDown(@NotNull T disposable) {return mySpecTest.disposeOnTearDown(disposable);}
@@ -500,9 +499,6 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     @NotNull public String getTestDirectoryName() {return mySpecTest.getTestDirectoryName();}
     public boolean isPerformanceTest() {return mySpecTest.isPerformanceTest();}
     public boolean isStressTest() {return mySpecTest.isStressTest();}
-    public void assertException(@NotNull AbstractExceptionCase<?> exceptionCase) {mySpecTest.assertException(exceptionCase);}
-    public void assertException(@NotNull AbstractExceptionCase exceptionCase, @Nullable String expectedErrorMsg) {mySpecTest.assertException(exceptionCase, expectedErrorMsg);}
-    public <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T {mySpecTest.assertNoException(exceptionCase);}
     public void assertNoThrowable(@NotNull Runnable closure) {mySpecTest.assertNoThrowable(closure);}
     public boolean annotatedWith(@NotNull Class<? extends Annotation> annotationClass) {return mySpecTest.annotatedWith(annotationClass);}
     @NotNull public String getHomePath() {return mySpecTest.getHomePath();}
@@ -587,10 +583,6 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public static void assertSame(Object expected, Object actual) {TestCase.assertSame(expected, actual);}
     public static void assertNotSame(String message, Object expected, Object actual) {TestCase.assertNotSame(message, expected, actual);}
     public static void assertNotSame(Object expected, Object actual) {TestCase.assertNotSame(expected, actual);}
-    public static void failSame(String message) {TestCase.failSame(message);}
-    public static void failNotSame(String message, Object expected, Object actual) {TestCase.failNotSame(message, expected, actual);}
-    public static void failNotEquals(String message, Object expected, Object actual) {TestCase.failNotEquals(message, expected, actual);}
-    public static String format(String message, Object expected, Object actual) {return TestCase.format(message, expected, actual);}
     @NotNull public static String toString(@NotNull Iterable<?> collection) {return UsefulTestCase.toString(collection);}
     @NotNull public static String toString(@NotNull Object[] collection, @NotNull String separator) {return UsefulTestCase.toString(collection, separator);}
     @NotNull public static String toString(@NotNull Collection<?> collection, @NotNull String separator) {return UsefulTestCase.toString(collection, separator);}
@@ -598,6 +590,6 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public static void doPostponedFormatting(@NotNull Project project) {UsefulTestCase.doPostponedFormatting(project);}
     public static void refreshRecursively(@NotNull VirtualFile file) {UsefulTestCase.refreshRecursively(file);}
     public static VirtualFile refreshAndFindFile(@NotNull File file) {return UsefulTestCase.refreshAndFindFile(file);}
-    public static void waitForAppLeakingThreads(long timeout, @NotNull TimeUnit timeUnit) {UsefulTestCase.waitForAppLeakingThreads(timeout, timeUnit);}
+    public static void waitForAppLeakingThreads(long timeout, @NotNull TimeUnit timeUnit) throws Exception {UsefulTestCase.waitForAppLeakingThreads(timeout, timeUnit);}
 // @formatter:on
 }

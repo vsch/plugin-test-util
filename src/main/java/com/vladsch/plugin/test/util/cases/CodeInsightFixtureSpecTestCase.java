@@ -76,12 +76,12 @@ import com.vladsch.flexmark.util.data.DataSet;
 import com.vladsch.plugin.test.util.IntentionInfo;
 import com.vladsch.plugin.test.util.renderers.LightFixtureSpecRenderer;
 import com.vladsch.plugin.util.TestUtils;
+import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.junit.ComparisonFailure;
 import org.junit.rules.ExpectedException;
 
 import javax.swing.Icon;
@@ -89,7 +89,6 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
@@ -114,7 +113,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     String BANNER_SEGMENTS = bannerText("SEGMENTS");
     String BANNER_AFTER_ACTION = bannerText("After Action");
     String BANNER_BEFORE_ACTION = bannerText("Before Action");
-    ExceptionMatcher EXCEPTION_MATCHER = ExceptionMatcher.matchPrefix(RuntimeException.class, "junit.framework.ComparisonFailure: ");
+    ExceptionMatcher EXCEPTION_MATCHER = ExceptionMatcher.matchPrefix(ComparisonFailure.class, "junit.framework.ComparisonFailure: ");
 
     Map<String, DataHolder> optionsMap = new HashMap<>();
     DataKey<Boolean> TEST_CARET_MARKUP = new DataKey<>("TEST_CARET_MARKUP", false);
@@ -185,7 +184,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
                     .append("<lineMarker ")
                     .append("icon=\"").append(iconResolver.apply(expectedLineMarker.getIcon())).append("\" ")
                     // NOTE: escaping HTML hides the HTML used for markup so only double quotes are escaped
-//                    .append("descr=\"").append(lineMarkerTooltip == null ? null : Escaping.escapeHtml(lineMarkerTooltip,false)).append("\" ")
+                    //                    .append("descr=\"").append(lineMarkerTooltip == null ? null : Escaping.escapeHtml(lineMarkerTooltip,false)).append("\" ")
                     .append("descr=\"").append(lineMarkerTooltip == null ? null : lineMarkerTooltip.replace("\"", "&quot;")).append("\" ")
                     .append(">")
                     .append(documentText, expectedLineMarker.startOffset, expectedLineMarker.endOffset)
@@ -274,7 +273,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
                     IntentionAction action = actionInGroup.getAction();
                     if (action.isAvailable(file.getProject(), editor, file)) {
 
-                        List<IntentionAction> options = actionInGroup.getOptions(file, editor);
+                        Iterable<? extends IntentionAction> options = actionInGroup.getOptions(file, editor);
                         ArrayList<IntentionInfo> subActions = new ArrayList<>();
                         if (options != null) {
                             for (IntentionAction subAction : options) {
@@ -435,9 +434,9 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     boolean shouldRunTest();
 
-    void invokeTestRunnable(@NotNull Runnable runnable) throws Exception;
+    void runTestRunnable(@NotNull ThrowableRunnable<Throwable> runnable) throws Throwable;
 
-    void defaultRunBare() throws Throwable;
+    void defaultRunBare(@NotNull ThrowableRunnable<Throwable> testRunnable) throws Throwable;
 
     void runBare() throws Throwable;
 
@@ -455,12 +454,6 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     boolean isPerformanceTest();
 
     boolean isStressTest();
-
-    void assertException(@NotNull AbstractExceptionCase<?> exceptionCase);
-
-    void assertException(@NotNull AbstractExceptionCase<?> exceptionCase, @Nullable String expectedErrorMsg);
-
-    <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T;
 
     void assertNoThrowable(@NotNull Runnable closure);
 
@@ -559,7 +552,8 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         String actualLineMarkers = "";
 
         try {
-            data.checkResult(file, infos, file.getText());
+            String filePath = virtualFile.getPath();
+            data.checkResult(file, infos, file.getText(), filePath);
         } catch (ComparisonFailure cf) {
             actualInspection = cf.getActual();
         }
@@ -650,7 +644,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
         PsiDocumentManager.getInstance(project).commitAllDocuments();
         EditorEx editor = getEditor();
-//        LOG.debug(String.format("Closing example file editor '%s' %d", Utils.escapeJavaString(editor.getDocument().getCharsSequence()), editor.getDocument().getModificationStamp()));
+        //        LOG.debug(String.format("Closing example file editor '%s' %d", Utils.escapeJavaString(editor.getDocument().getCharsSequence()), editor.getDocument().getModificationStamp()));
 
         FileEditorManagerEx.getInstanceEx(project).closeFile(editor.getVirtualFile());
         EditorHistoryManager.getInstance(project).removeFile(editor.getVirtualFile());
