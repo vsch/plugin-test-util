@@ -153,14 +153,14 @@ public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsight
     @Override final public void addSuppressedException(@NotNull Throwable e) { super.addSuppressedException(e);}
     @Override final public boolean shouldContainTempFiles() { return super.shouldContainTempFiles();}
     @Override final public boolean isIconRequired() { return super.isIconRequired();}
-    @Override final public void addTmpFileToKeep(@NotNull File file) { super.addTmpFileToKeep(file);}
+    //@Override final public void addTmpFileToKeep(@NotNull File file) { super.addTmpFileToKeep(file);}
     @NotNull @Override final public Disposable getTestRootDisposable() { return super.getTestRootDisposable();}
     @Override final public boolean shouldRunTest() { return super.shouldRunTest();}
-    @Override final public void invokeTestRunnable(@NotNull Runnable runnable) throws Exception { super.invokeTestRunnable(runnable);}
-    @Override final public void defaultRunBare() throws Throwable { super.defaultRunBare();}
-    @Override final public void runBare() throws Throwable { super.runBare();}
+    //@Override final public void invokeTestRunnable(@NotNull Runnable runnable) throws Exception { super.invokeTestRunnable(runnable);}
+    //@Override final public void defaultRunBare(@NotNull ThrowableRunnable<Throwable> testThrowable) throws Throwable { super.defaultRunBare(testThrowable);}
+    //@Override final public void runBare() throws Throwable { super.runBare();}
     @Override final public boolean runInDispatchThread() { return super.runInDispatchThread();}
-    @Override final public void edt(@NotNull ThrowableRunnable<Throwable> runnable) { super.edt(runnable);}
+    //@Override final public void edt(@NotNull ThrowableRunnable<Throwable> runnable) { super.edt(runnable);}
     @NotNull @Override final public <T extends Disposable> T disposeOnTearDown(@NotNull T disposable) { return super.disposeOnTearDown(disposable);}@NotNull
     @Override final public String getTestName(boolean lowercaseFirstLetter) { return super.getTestName(lowercaseFirstLetter);}
     @NotNull @Override final public String getTestDirectoryName() { return super.getTestDirectoryName();}

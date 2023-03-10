@@ -487,14 +487,14 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public void addSuppressedException(@NotNull Throwable e) {mySpecTest.addSuppressedException(e);}
     public boolean shouldContainTempFiles() {return mySpecTest.shouldContainTempFiles();}
     public boolean isIconRequired() {return mySpecTest.isIconRequired();}
-    public void addTmpFileToKeep(@NotNull File file) {mySpecTest.addTmpFileToKeep(file);}
+    //public void addTmpFileToKeep(@NotNull File file) {mySpecTest.addTmpFileToKeep(file);}
     @NotNull public Disposable getTestRootDisposable() {return mySpecTest.getTestRootDisposable();}
     public boolean shouldRunTest() {return mySpecTest.shouldRunTest();}
-    public void invokeTestRunnable(@NotNull Runnable runnable) throws Exception {mySpecTest.invokeTestRunnable(runnable);}
-    public void defaultRunBare() throws Throwable {mySpecTest.defaultRunBare();}
-    public void runBare() throws Throwable {mySpecTest.runBare();}
-    public boolean runInDispatchThread() {return mySpecTest.runInDispatchThread();}
-    public void edt(@NotNull ThrowableRunnable<Throwable> runnable) {mySpecTest.edt(runnable);}
+    //public void invokeTestRunnable(@NotNull Runnable runnable) throws Exception {mySpecTest.invokeTestRunnable(runnable);}
+    //public void defaultRunBare() throws Throwable {mySpecTest.defaultRunBare();}
+    //public void runBare() throws Throwable {mySpecTest.runBare();}
+    //public boolean runInDispatchThread() {return mySpecTest.runInDispatchThread();}
+    //public void edt(@NotNull ThrowableRunnable<Throwable> runnable) {mySpecTest.edt(runnable);}
     @NotNull public <T extends Disposable> T disposeOnTearDown(@NotNull T disposable) {return mySpecTest.disposeOnTearDown(disposable);}
     @NotNull public String getTestName(boolean lowercaseFirstLetter) {return mySpecTest.getTestName(lowercaseFirstLetter);}
     @NotNull public String getTestDirectoryName() {return mySpecTest.getTestDirectoryName();}
@@ -598,6 +598,6 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public static void doPostponedFormatting(@NotNull Project project) {UsefulTestCase.doPostponedFormatting(project);}
     public static void refreshRecursively(@NotNull VirtualFile file) {UsefulTestCase.refreshRecursively(file);}
     public static VirtualFile refreshAndFindFile(@NotNull File file) {return UsefulTestCase.refreshAndFindFile(file);}
-    public static void waitForAppLeakingThreads(long timeout, @NotNull TimeUnit timeUnit) {UsefulTestCase.waitForAppLeakingThreads(timeout, timeUnit);}
+    public static void waitForAppLeakingThreads(long timeout, @NotNull TimeUnit timeUnit)throws Exception {UsefulTestCase.waitForAppLeakingThreads(timeout, timeUnit);}
 // @formatter:on
 }

@@ -427,22 +427,22 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     boolean isIconRequired();
 
-    void addTmpFileToKeep(@NotNull File file);
+    //void addTmpFileToKeep(@NotNull File file);
 
     @NotNull
     Disposable getTestRootDisposable();
 
     boolean shouldRunTest();
 
-    void invokeTestRunnable(@NotNull Runnable runnable) throws Exception;
+    //void invokeTestRunnable(@NotNull Runnable runnable) throws Exception;
 
-    void defaultRunBare() throws Throwable;
+    //void defaultRunBare() throws Throwable;
 
-    void runBare() throws Throwable;
+    //void runBare() throws Throwable;
 
-    boolean runInDispatchThread();
+    //boolean runInDispatchThread();
 
-    void edt(@NotNull ThrowableRunnable<Throwable> runnable);
+    //<T extends Throwable> void  edt(@NotNull ThrowableRunnable<T> runnable);
 
     @NotNull
     <T extends Disposable> T disposeOnTearDown(@NotNull T disposable);
