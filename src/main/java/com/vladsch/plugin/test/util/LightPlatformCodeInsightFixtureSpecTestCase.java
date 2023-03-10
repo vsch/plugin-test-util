@@ -37,6 +37,8 @@ import com.vladsch.plugin.test.util.cases.CodeInsightFixtureSpecTestCase;
 import com.vladsch.plugin.test.util.cases.SpecTest;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -44,6 +46,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import javax.swing.Timer;
+import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -59,10 +62,15 @@ import static org.junit.rules.ExpectedException.none;
 
 @RunWith(value = Parameterized.class)
 public abstract class LightPlatformCodeInsightFixtureSpecTestCase extends LightPlatformCodeInsightFixtureTestCase implements CodeInsightFixtureSpecTestCase {
-    @Override
-    protected void tearDown() throws Exception {
+    @Before
+    public void before() throws Throwable {
+        setUp();
+    }
+
+    @After
+    public void after() throws Throwable {
         checkJavaSwingTimersAreDisposed();
-        super.tearDown();
+        tearDown();
     }
 
     void checkJavaSwingTimersAreDisposed() {
@@ -154,10 +162,10 @@ public abstract class LightPlatformCodeInsightFixtureSpecTestCase extends LightP
     @Override final public void addSuppressedException(@NotNull Throwable e) { super.addSuppressedException(e);}
     @Override final public boolean shouldContainTempFiles() { return super.shouldContainTempFiles();}
     @Override final public boolean isIconRequired() { return super.isIconRequired();}
-    @Override final public void addTmpFileToKeep(@NotNull Path file) { ((CodeInsightFixtureSpecTestCase)this).addTmpFileToKeep(file);}
+    //@Override final public void addTmpFileToKeep(@NotNull File file) { super.addTmpFileToKeep(file);}
     @NotNull @Override final public Disposable getTestRootDisposable() { return super.getTestRootDisposable();}
     @Override final public boolean shouldRunTest() { return super.shouldRunTest();}
-    @Override final public void runTestRunnable(@NotNull ThrowableRunnable<Throwable> runnable) throws Throwable { super.runTestRunnable(runnable);}
+    //@Override final public void invokeTestRunnable(@NotNull Runnable runnable) throws Exception { super.invokeTestRunnable(runnable);}
     @Override final public void defaultRunBare(@NotNull ThrowableRunnable<Throwable> testRunnable) throws Throwable { super.defaultRunBare(testRunnable);}
     //@Override final public void runBare() throws Throwable { super.runBare();}
     @Override final public boolean runInDispatchThread() { return super.runInDispatchThread();}

@@ -76,12 +76,12 @@ import com.vladsch.flexmark.util.data.DataSet;
 import com.vladsch.plugin.test.util.IntentionInfo;
 import com.vladsch.plugin.test.util.renderers.LightFixtureSpecRenderer;
 import com.vladsch.plugin.util.TestUtils;
-import junit.framework.ComparisonFailure;
 import junit.framework.TestCase;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.NonNls;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import org.junit.ComparisonFailure;
 import org.junit.rules.ExpectedException;
 
 import javax.swing.Icon;
@@ -113,7 +113,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     String BANNER_SEGMENTS = bannerText("SEGMENTS");
     String BANNER_AFTER_ACTION = bannerText("After Action");
     String BANNER_BEFORE_ACTION = bannerText("Before Action");
-    ExceptionMatcher EXCEPTION_MATCHER = ExceptionMatcher.matchPrefix(ComparisonFailure.class, "junit.framework.ComparisonFailure: ");
+    ExceptionMatcher EXCEPTION_MATCHER = ExceptionMatcher.matchPrefix(RuntimeException.class, "junit.framework.ComparisonFailure: ");
 
     Map<String, DataHolder> optionsMap = new HashMap<>();
     DataKey<Boolean> TEST_CARET_MARKUP = new DataKey<>("TEST_CARET_MARKUP", false);
@@ -427,18 +427,18 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     boolean isIconRequired();
 
-    void addTmpFileToKeep(@NotNull Path file);
+    //void addTmpFileToKeep(@NotNull Path file);
 
     @NotNull
     Disposable getTestRootDisposable();
 
     boolean shouldRunTest();
 
-    void runTestRunnable(@NotNull ThrowableRunnable<Throwable> runnable) throws Throwable;
+    //void invokeTestRunnable(@NotNull Runnable runnable) throws Exception;
 
     void defaultRunBare(@NotNull ThrowableRunnable<Throwable> testRunnable) throws Throwable;
 
-    void runBare() throws Throwable;
+    //void runBare() throws Throwable;
 
     boolean runInDispatchThread();
 
@@ -494,7 +494,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
             boolean ignoreExtraHighlighting
     ) {
         ExpectedHighlightingData data = new ExpectedHighlightingData(
-                getEditor().getDocument(), checkWarnings, checkWeakWarnings, checkInfos, ignoreExtraHighlighting);
+                getEditor().getDocument(), checkWarnings, checkWeakWarnings, checkInfos, ignoreExtraHighlighting, null);
         data.init();
         return collectAndCheckHighlighting(specRenderer, data, checkLineMarkers);
     }
@@ -552,8 +552,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         String actualLineMarkers = "";
 
         try {
-            String filePath = virtualFile.getPath();
-            data.checkResult(file, infos, file.getText(), filePath);
+            data.checkResult(file, infos, file.getText());
         } catch (ComparisonFailure cf) {
             actualInspection = cf.getActual();
         }
