@@ -27,6 +27,7 @@ import com.intellij.codeInspection.LocalInspectionTool;
 import com.intellij.codeInspection.ex.InspectionToolWrapper;
 import com.intellij.diagnostic.DebugLogManager;
 import com.intellij.ide.structureView.newStructureView.StructureViewComponent;
+import com.intellij.injected.editor.EditorWindow;
 import com.intellij.lang.Language;
 import com.intellij.lang.annotation.HighlightSeverity;
 import com.intellij.openapi.Disposable;
@@ -49,7 +50,6 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiReference;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
 import com.intellij.psi.codeStyle.CodeStyleSettingsManager;
-import com.intellij.psi.impl.source.tree.injected.InjectedLanguageUtil;
 import com.intellij.psi.util.PsiUtilBase;
 import com.intellij.testFramework.HighlightTestInfo;
 import com.intellij.testFramework.UsefulTestCase;
@@ -63,14 +63,15 @@ import com.intellij.util.ThrowableRunnable;
 import com.vladsch.flexmark.test.util.SpecExampleRendererBase;
 import com.vladsch.flexmark.test.util.spec.ResourceLocation;
 import com.vladsch.flexmark.test.util.spec.SpecExample;
-import com.vladsch.flexmark.util.misc.Utils;
 import com.vladsch.flexmark.util.data.DataHolder;
+import com.vladsch.flexmark.util.misc.Utils;
 import com.vladsch.flexmark.util.sequence.BasedSequence;
 import com.vladsch.flexmark.util.sequence.Range;
 import com.vladsch.flexmark.util.sequence.builder.BasedSegmentBuilder;
 import com.vladsch.plugin.test.util.AdditionalProjectFiles;
 import com.vladsch.plugin.test.util.DebugLogSettings;
 import com.vladsch.plugin.test.util.IntentionInfo;
+import com.vladsch.plugin.test.util.SpecTestSetup;
 import com.vladsch.plugin.test.util.cases.CodeInsightFixtureSpecTestCase;
 import com.vladsch.plugin.test.util.cases.SpecTest;
 import com.vladsch.plugin.util.AppUtils;
@@ -86,6 +87,7 @@ import javax.swing.KeyStroke;
 import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -133,7 +135,8 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
 
     @NotNull
     protected Editor getHostEditor() {
-        return InjectedLanguageUtil.getTopLevelEditor(getEditor());
+        Editor editor = getEditor();
+        return editor instanceof EditorWindow ? ((EditorWindow) editor).getDelegate() : editor;
     }
 
     protected PsiFile getHostFileAtCaret() {
@@ -271,7 +274,7 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
         CodeStyleSettingsManager.getInstance(getProject()).setTemporarySettings(myCodeStyleSettings);
 
         // allow customization of initialization
-        mySpecTest.initializeRenderer(this, myOptions);
+        mySpecTest.initializeRenderer(this);
 
         SpecTest.ADDITIONAL_PROJECT_FILES_OPTION.setInstanceData(myAdditionalProjectFiles, myOptions);
 
@@ -306,8 +309,11 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
 
         // CAUTION: getting document char sequence seems to be needed, without it some tests have document content reverted to original after action has modified it
         //   causing tests to fail and caret offsets to be out of sync with content and offset > textLength()
-        getEditor().getDocument().getCharsSequence();
+        CharSequence dummy = getEditor().getDocument().getCharsSequence();
         //LOG.debug(String.format("Created example file %s '%s' %d", getExampleFileName(myExample), Utils.escapeJavaString(getEditor().getDocument().getCharsSequence()), getEditor().getDocument().getModificationStamp()));
+
+        // Allow customizing file data for test
+        SpecTestSetup.CUSTOMIZE_FILE_OPTION.setInstanceData(getFile(), myOptions);
     }
 
     @Override
@@ -482,22 +488,18 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public void addSuppressedException(@NotNull Throwable e) {mySpecTest.addSuppressedException(e);}
     public boolean shouldContainTempFiles() {return mySpecTest.shouldContainTempFiles();}
     public boolean isIconRequired() {return mySpecTest.isIconRequired();}
-    public void addTmpFileToKeep(@NotNull File file) {mySpecTest.addTmpFileToKeep(file);}
+    //public void addTmpFileToKeep(@NotNull Path file) {mySpecTest.addTmpFileToKeep(file);}
     @NotNull public Disposable getTestRootDisposable() {return mySpecTest.getTestRootDisposable();}
     public boolean shouldRunTest() {return mySpecTest.shouldRunTest();}
-    public void invokeTestRunnable(@NotNull Runnable runnable) throws Exception {mySpecTest.invokeTestRunnable(runnable);}
-    public void defaultRunBare() throws Throwable {mySpecTest.defaultRunBare();}
-    public void runBare() throws Throwable {mySpecTest.runBare();}
+    //public void invokeTestRunnable(@NotNull Runnable runnable) throws Exception {mySpecTest.invokeTestRunnable(runnable);}
+    public void defaultRunBare(@NotNull ThrowableRunnable<Throwable> testRunnable) throws Throwable {mySpecTest.defaultRunBare(testRunnable);}
+    //public void runBare() throws Throwable {mySpecTest.runBare();}
     public boolean runInDispatchThread() {return mySpecTest.runInDispatchThread();}
-    public void edt(@NotNull ThrowableRunnable<Throwable> runnable) {mySpecTest.edt(runnable);}
     @NotNull public <T extends Disposable> T disposeOnTearDown(@NotNull T disposable) {return mySpecTest.disposeOnTearDown(disposable);}
     @NotNull public String getTestName(boolean lowercaseFirstLetter) {return mySpecTest.getTestName(lowercaseFirstLetter);}
     @NotNull public String getTestDirectoryName() {return mySpecTest.getTestDirectoryName();}
     public boolean isPerformanceTest() {return mySpecTest.isPerformanceTest();}
     public boolean isStressTest() {return mySpecTest.isStressTest();}
-    public void assertException(@NotNull AbstractExceptionCase<?> exceptionCase) {mySpecTest.assertException(exceptionCase);}
-    public void assertException(@NotNull AbstractExceptionCase exceptionCase, @Nullable String expectedErrorMsg) {mySpecTest.assertException(exceptionCase, expectedErrorMsg);}
-    public <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T {mySpecTest.assertNoException(exceptionCase);}
     public void assertNoThrowable(@NotNull Runnable closure) {mySpecTest.assertNoThrowable(closure);}
     public boolean annotatedWith(@NotNull Class<? extends Annotation> annotationClass) {return mySpecTest.annotatedWith(annotationClass);}
     @NotNull public String getHomePath() {return mySpecTest.getHomePath();}
@@ -593,6 +595,6 @@ public abstract class LightFixtureSpecRenderer<T extends CodeInsightFixtureSpecT
     public static void doPostponedFormatting(@NotNull Project project) {UsefulTestCase.doPostponedFormatting(project);}
     public static void refreshRecursively(@NotNull VirtualFile file) {UsefulTestCase.refreshRecursively(file);}
     public static VirtualFile refreshAndFindFile(@NotNull File file) {return UsefulTestCase.refreshAndFindFile(file);}
-    public static void waitForAppLeakingThreads(long timeout, @NotNull TimeUnit timeUnit) {UsefulTestCase.waitForAppLeakingThreads(timeout, timeUnit);}
+    public static void waitForAppLeakingThreads(long timeout, @NotNull TimeUnit timeUnit)throws Exception {UsefulTestCase.waitForAppLeakingThreads(timeout, timeUnit);}
 // @formatter:on
 }

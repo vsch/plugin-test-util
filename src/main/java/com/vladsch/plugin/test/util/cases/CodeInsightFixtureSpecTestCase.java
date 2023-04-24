@@ -89,10 +89,10 @@ import javax.swing.JComponent;
 import javax.swing.KeyStroke;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -184,7 +184,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
                     .append("<lineMarker ")
                     .append("icon=\"").append(iconResolver.apply(expectedLineMarker.getIcon())).append("\" ")
                     // NOTE: escaping HTML hides the HTML used for markup so only double quotes are escaped
-//                    .append("descr=\"").append(lineMarkerTooltip == null ? null : Escaping.escapeHtml(lineMarkerTooltip,false)).append("\" ")
+                    //                    .append("descr=\"").append(lineMarkerTooltip == null ? null : Escaping.escapeHtml(lineMarkerTooltip,false)).append("\" ")
                     .append("descr=\"").append(lineMarkerTooltip == null ? null : lineMarkerTooltip.replace("\"", "&quot;")).append("\" ")
                     .append(">")
                     .append(documentText, expectedLineMarker.startOffset, expectedLineMarker.endOffset)
@@ -273,7 +273,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
                     IntentionAction action = actionInGroup.getAction();
                     if (action.isAvailable(file.getProject(), editor, file)) {
 
-                        List<IntentionAction> options = actionInGroup.getOptions(file, editor);
+                        Iterable<? extends IntentionAction> options = actionInGroup.getOptions(file, editor);
                         ArrayList<IntentionInfo> subActions = new ArrayList<>();
                         if (options != null) {
                             for (IntentionAction subAction : options) {
@@ -316,7 +316,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     /**
      * Load extra settings and initialize spec renderer for parse
      */
-    <T extends CodeInsightFixtureSpecTestCase> void initializeRenderer(@NotNull LightFixtureSpecRenderer<T> specRenderer, @NotNull DataHolder specRendererOptions);
+    <T extends CodeInsightFixtureSpecTestCase> void initializeRenderer(@NotNull LightFixtureSpecRenderer<T> specRenderer);
 
     /**
      * Reset extra settings for next test and clean up any resources
@@ -331,12 +331,8 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     @NotNull
     @Override
     default LightFixtureSpecRenderer<?> getSpecExampleRenderer(@NotNull SpecExample example, @Nullable DataHolder exampleOptions) {
-        if (exampleOptions == null) {
-            return createExampleSpecRenderer(example, getDefaultOptions());
-        } else {
-            DataHolder options = DataSet.aggregate(getDefaultOptions(), exampleOptions);
-            return createExampleSpecRenderer(example, options);
-        }
+        DataHolder options = exampleOptions == null ? getDefaultOptions() : DataSet.aggregate(getDefaultOptions(), exampleOptions);
+        return createExampleSpecRenderer(example, options);
     }
 
     default VirtualFile createImageFile(String fileName, InputStream content) {
@@ -431,22 +427,20 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     boolean isIconRequired();
 
-    void addTmpFileToKeep(@NotNull File file);
+    //void addTmpFileToKeep(@NotNull Path file);
 
     @NotNull
     Disposable getTestRootDisposable();
 
     boolean shouldRunTest();
 
-    void invokeTestRunnable(@NotNull Runnable runnable) throws Exception;
+    //void invokeTestRunnable(@NotNull Runnable runnable) throws Exception;
 
-    void defaultRunBare() throws Throwable;
+    void defaultRunBare(@NotNull ThrowableRunnable<Throwable> testRunnable) throws Throwable;
 
-    void runBare() throws Throwable;
+    //void runBare() throws Throwable;
 
     boolean runInDispatchThread();
-
-    void edt(@NotNull ThrowableRunnable<Throwable> runnable);
 
     @NotNull
     <T extends Disposable> T disposeOnTearDown(@NotNull T disposable);
@@ -460,12 +454,6 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     boolean isPerformanceTest();
 
     boolean isStressTest();
-
-    void assertException(@NotNull AbstractExceptionCase<?> exceptionCase);
-
-    void assertException(@NotNull AbstractExceptionCase<?> exceptionCase, @Nullable String expectedErrorMsg);
-
-    <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T;
 
     void assertNoThrowable(@NotNull Runnable closure);
 
@@ -506,7 +494,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
             boolean ignoreExtraHighlighting
     ) {
         ExpectedHighlightingData data = new ExpectedHighlightingData(
-                getEditor().getDocument(), checkWarnings, checkWeakWarnings, checkInfos, ignoreExtraHighlighting, getHostFile());
+                getEditor().getDocument(), checkWarnings, checkWeakWarnings, checkInfos, ignoreExtraHighlighting, null);
         data.init();
         return collectAndCheckHighlighting(specRenderer, data, checkLineMarkers);
     }
@@ -564,7 +552,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         String actualLineMarkers = "";
 
         try {
-            data.checkResult(infos, file.getText());
+            data.checkResult(file, infos, file.getText());
         } catch (ComparisonFailure cf) {
             actualInspection = cf.getActual();
         }
@@ -655,7 +643,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
         PsiDocumentManager.getInstance(project).commitAllDocuments();
         EditorEx editor = getEditor();
-//        LOG.debug(String.format("Closing example file editor '%s' %d", Utils.escapeJavaString(editor.getDocument().getCharsSequence()), editor.getDocument().getModificationStamp()));
+        //        LOG.debug(String.format("Closing example file editor '%s' %d", Utils.escapeJavaString(editor.getDocument().getCharsSequence()), editor.getDocument().getModificationStamp()));
 
         FileEditorManagerEx.getInstanceEx(project).closeFile(editor.getVirtualFile());
         EditorHistoryManager.getInstance(project).removeFile(editor.getVirtualFile());
