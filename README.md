@@ -77,11 +77,11 @@ case used to set right margin, turn on wrap on typing and invoke `type()` for te
 
 ---
 
-Copyright (c) 2019-2019, Vladimir Schneider,
+Copyright (c) 2019-2023, Vladimir Schneider,
 
 BSD (2-clause) licensed, see [LICENSE] file.
 
 [CommonMark (spec 0.28)]: https://spec.commonmark.org/0.28
 [LICENSE]: LICENSE
-[Markdown Navigator]: http://vladsch.com/product/markdown-navigator
+[Markdown Navigator]: https://vladsch.com/product/markdown-navigator
 
