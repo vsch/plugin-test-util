@@ -4,3 +4,6 @@
 /plugin-test-util.jar
 /.idea/sbt.xml
 /lib/
+/.gradle/
+/build/
+/gradle/wrapper/gradle-wrapper.jar

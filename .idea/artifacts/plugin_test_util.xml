@@ -1,8 +1,0 @@
-<component name="ArtifactManager">
-  <artifact type="jar" build-on-make="true" name="plugin-test-util">
-    <output-path>$PROJECT_DIR$</output-path>
-    <root id="archive" name="plugin-test-util.jar">
-      <element id="module-output" name="plugin-test-util" />
-    </root>
-  </artifact>
-</component>

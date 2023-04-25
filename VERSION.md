@@ -3,14 +3,21 @@
 [TOC]: #
 
 ### Table of Contents
-- [Next Version 1.0.1](#next-version-101)
+- [Version 1.212.4](#version-12124)
+- [Version 1.0.2](#version-102)
 - [Version 1.0.0](#version-100)
 
+### Version 1.212.4
 
-### Next Version 1.0.1
+* Remove: disable intellij plugin related tasks
+* Change: switch to sev ver, minor ver reflects IDE min version compatibility, patch ver
+  reflects changes to the library itself
+* Change: migrate to gradle build.
+
+### Version 1.0.2
 
 * Fix: default test case when running individual spec examples always adding AST section
-      regardless of spec AST presence.
+  regardless of spec AST presence.
 * Add: `log[]` option to enable IDE debug logs in spec example options
 
 ### Version 1.0.0

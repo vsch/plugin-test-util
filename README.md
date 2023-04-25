@@ -6,7 +6,6 @@
 - [Summary](#summary)
 - [Test File Format](#test-file-format)
 
-
 ### Summary
 
 Collection of utilities and classes used for testing JetBrains API plugins using flexmark-java
@@ -43,8 +42,8 @@ so I could use it for testing all my plugins.
 
 The caret positions and selection markers, for now, are hardcoded to be `⦙` for caret and `⟦ ⟧`
 for selection markers. They do not stand out as much as the standard: `<caret>`, `<selection>`
-and `</selection>` IDE markup but they also do not look like HTML to markdown source
-and tend to disturb the visual placement of text less.
+and `</selection>` IDE markup but they also do not look like HTML to markdown source and tend to
+disturb the visual placement of text less.
 
 Here is a sample, input from expected results is separated by a line with a single `.` at the
 start. Options `type[]`, `margin[]`, `wrap` are all Java test file specific options. In this
@@ -52,21 +51,21 @@ case used to set right margin, turn on wrap on typing and invoke `type()` for te
 `[]`.
 
     ## Typing Handler
-    
+
     ```````````````````````````````` example(Typing Handler: 1) options(type[ ])
     ⦙text
     .
      ⦙text
     ````````````````````````````````
-    
-    
+
+
     ```````````````````````````````` example(Typing Handler: 2) options(type[ ])
     ⦙ text
     .
      ⦙ text
     ````````````````````````````````
-    
-    
+
+
     ```````````````````````````````` example(Typing Handler: 3) options(wrap, margin[30], type[ ])
     ⦙text should wrap onto the next line at right margin of 30
     .
@@ -79,9 +78,9 @@ case used to set right margin, turn on wrap on typing and invoke `type()` for te
 
 Copyright (c) 2019-2023, Vladimir Schneider,
 
-BSD (2-clause) licensed, see [LICENSE] file.
+Apache License Version 2.0, see [LICENSE.txt] file.
 
 [CommonMark (spec 0.28)]: https://spec.commonmark.org/0.28
-[LICENSE]: LICENSE
-[Markdown Navigator]: https://vladsch.com/product/markdown-navigator
+[LICENSE.txt]: LICENSE.txt
+[Markdown Navigator]: https://github.com/vsch/idea-multimarkdown
 

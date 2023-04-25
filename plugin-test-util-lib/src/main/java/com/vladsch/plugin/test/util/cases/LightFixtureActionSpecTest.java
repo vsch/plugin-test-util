@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2015-2019 Vladimir Schneider <vladimir.schneider@gmail.com>, all rights reserved.
- *
- * This code is private property of the copyright holder and cannot be used without
- * having obtained a license or prior written permission of the copyright holder.
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- *
- */
-
 package com.vladsch.plugin.test.util.cases;
 
 import com.vladsch.flexmark.test.util.TestUtils;
@@ -107,21 +92,42 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
         throw new IllegalStateException("'type' option requires non-empty text argument");
     }
 
+    /**
+     * Create spec renderer for example
+     *
+     * @param example spec example
+     * @param options options
+     *
+     * @return action spec renderer
+     */
     @Override
     ActionSpecRenderer<?> createExampleSpecRenderer(@NotNull SpecExample example, @Nullable DataHolder options);
 
     /**
      * Load extra settings and initialize spec renderer for parse
+     *
+     * @param <T>                 spec renderer type
+     * @param specRenderer        spec renderer
+     * @param specRendererOptions spec renderer options
      */
     <T extends LightFixtureActionSpecTest> void beforeDoTestAction(@NotNull ActionSpecRenderer<T> specRenderer, @NotNull DataHolder specRendererOptions);
 
     /**
      * Reset extra settings for next test and clean up any resources
+     *
+     * @param <T>                 spec renderer type
+     * @param specRenderer        spec renderer
+     * @param specRendererOptions spec renderer options
      */
     <T extends LightFixtureActionSpecTest> void afterDoTestAction(@NotNull ActionSpecRenderer<T> specRenderer, @NotNull DataHolder specRendererOptions);
 
     /**
+     * Render the test action html for the spec renderer
      *
+     * @param <T>                 spec renderer type
+     * @param html                html builder
+     * @param specRenderer        spec renderer
+     * @param specRendererOptions spec renderer options
      */
     <T extends LightFixtureActionSpecTest> void renderTesActionHtml(@NotNull StringBuilder html, @NotNull ActionSpecRenderer<T> specRenderer, DataHolder specRendererOptions);
 }

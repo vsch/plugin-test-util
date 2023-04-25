@@ -88,9 +88,11 @@ public class ParamRowGenerator {
     /**
      * Add parametrized test row and prefix with file location information at [0]
      *
-     * @param callerOffset offset to the stack frame 0 if called directly from test, add 1 for every super call in between
-     * @param row          an array of objects parameters for the test
-     * @param decorator    decorator to customize the test message
+     * @param callerOffset   offset to the stack frame 0 if called directly from test, add 1 for every super call in between
+     * @param row            an array of objects parameters for the test
+     * @param decorator      decorator to customize the test message
+     * @param lineProvider   line provider to customize the line number for the location string
+     * @param columnProvider column provider to customize the column number for the location string
      *
      * @return this
      */
@@ -101,10 +103,12 @@ public class ParamRowGenerator {
     /**
      * Add parametrized test row and prefix with file location information at [0]
      *
-     * @param callerOffset offset to the stack frame 0 if called directly from test, add 1 for every super call in between
-     * @param insertAt     where to insert location string
-     * @param row          an array of objects parameters for the test
-     * @param decorator    decorator to customize the test message
+     * @param callerOffset   offset to the stack frame 0 if called directly from test, add 1 for every super call in between
+     * @param insertAt       where to insert location string
+     * @param row            an array of objects parameters for the test
+     * @param decorator      decorator to customize the test message
+     * @param lineProvider   line provider to customize the line number for the location string
+     * @param columnProvider column provider to customize the column number for the location string
      *
      * @return this
      */

@@ -56,7 +56,6 @@ import com.intellij.testFramework.EditorTestUtil;
 import com.intellij.testFramework.EdtTestUtil;
 import com.intellij.testFramework.ExpectedHighlightingData;
 import com.intellij.testFramework.UsefulTestCase;
-import com.intellij.testFramework.exceptionCases.AbstractExceptionCase;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import com.intellij.testFramework.fixtures.IdeaTestExecutionPolicy;
 import com.intellij.testFramework.fixtures.TempDirTestFixture;
@@ -92,13 +91,13 @@ import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.annotation.Annotation;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.ResourceBundle;
 import java.util.function.Function;
 
 import static java.util.Comparator.comparingInt;
@@ -315,19 +314,39 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     /**
      * Load extra settings and initialize spec renderer for parse
+     *
+     * @param <T>          test case type
+     * @param specRenderer spec renderer
      */
     <T extends CodeInsightFixtureSpecTestCase> void initializeRenderer(@NotNull LightFixtureSpecRenderer<T> specRenderer);
 
     /**
      * Reset extra settings for next test and clean up any resources
+     *
+     * @param <T>                 test case type
+     * @param specRenderer        spec renderer
+     * @param specRendererOptions options for spec renderer
      */
     <T extends CodeInsightFixtureSpecTestCase> void finalizeRenderer(@NotNull LightFixtureSpecRenderer<T> specRenderer, @NotNull DataHolder specRendererOptions);
 
     /**
      * Add extra rendered info to spec test AST
+     *
+     * @param <T>                 test case type
+     * @param ast                 to add to ast section of spec test
+     * @param specRenderer        spec renderer
+     * @param specRendererOptions options for spec renderer
      */
     <T extends CodeInsightFixtureSpecTestCase> void renderSpecTestAst(@NotNull StringBuilder ast, @NotNull LightFixtureSpecRenderer<T> specRenderer, @NotNull DataHolder specRendererOptions);
 
+    /**
+     * Create spec renderer for example
+     *
+     * @param example        spec example
+     * @param exampleOptions example custom options
+     *
+     * @return example spec renderer
+     */
     @NotNull
     @Override
     default LightFixtureSpecRenderer<?> getSpecExampleRenderer(@NotNull SpecExample example, @Nullable DataHolder exampleOptions) {
@@ -335,6 +354,14 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         return createExampleSpecRenderer(example, options);
     }
 
+    /**
+     * Create image file
+     *
+     * @param fileName file name
+     * @param content  file content
+     *
+     * @return virtual file for the image file
+     */
     default VirtualFile createImageFile(String fileName, InputStream content) {
         TempDirTestFixture fixture = getFixture().getTempDirFixture();
         VirtualFile virtualFile = fixture.createFile(fileName);
@@ -351,39 +378,89 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         return virtualFile;
     }
 
+    /**
+     * Called from dumpSpecReader as it is accumulating tests
+     *
+     * @param exampleRenderer example renderer
+     * @param exampleParse    example parse state
+     * @param exampleOptions  example options
+     * @param ignoredTestCase true if ignored example
+     * @param html            html used for comparison to expected html
+     * @param ast             ast used for comparison to expected ast
+     */
     @Override
     default void addFullSpecExample(@NotNull SpecExampleRenderer exampleRenderer, @NotNull SpecExampleParse exampleParse, @Nullable DataHolder exampleOptions, boolean ignoredTestCase, @NotNull String html, @Nullable String ast) {
-        // called from dumpSpecReader as it is accumulating tests
     }
 
+    /**
+     * Called from dumpSpecReader as it is accumulating tests to signal start of full test spec
+     */
     default void fullTestSpecStarting() {
 
     }
 
+    /**
+     * Called from dumpSpecReader as it is accumulating tests, to signal end of full test spec
+     */
     default void fullTestSpecComplete() {
 
     }
 
+    /**
+     * Called before do highlighting is called on the file
+     *
+     * @param specRenderer spec renderer
+     * @param file         psi file
+     */
     default void beforeDoHighlighting(@NotNull LightFixtureSpecRenderer<?> specRenderer, @NotNull PsiFile file) {
 
     }
 
+    /**
+     * crate a DumpSpecReader for the given resource location and file resource
+     *
+     * @param location resource location
+     *
+     * @return DumpSpecReader
+     */
     @NotNull
     default DumpSpecReader create(@NotNull ResourceLocation location) {
         return SpecReader.create(location, (stream, fileUrl) -> new DumpSpecReader(stream, this, fileUrl, true));
     }
 
+    /**
+     * Called to allow customizing the example before it is used for tests
+     *
+     * @param example example as it is in the test or spec file
+     *
+     * @return example to use for tests
+     */
     @NotNull
     @Override
     default SpecExample checkExample(@NotNull SpecExample example) {
         return example;
     }
 
+    /**
+     * Get default options for the tests
+     *
+     * @return default options
+     */
     @NotNull
     DataHolder getDefaultOptions();
 
+    /**
+     * Get logger for the test
+     *
+     * @return Logger
+     */
     Logger LOG();
 
+    /**
+     * Get the current spec example
+     *
+     * @return spec example
+     */
     @NotNull
     SpecExample getExample();
 
@@ -395,32 +472,69 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     Project getProject();
 
-    // to make it same as LightPlatformCodeInsightTestCase
-    default EditorEx getEditor() { return (EditorEx) getFixture().getEditor();}
+    /**
+     * Returns the editor currently opened in the in-memory editor.
+     * to make it same as LightPlatformCodeInsightTestCase
+     *
+     * @return editor currently opened in the in-memory editor.
+     */
+    default EditorEx getEditor() { return (EditorEx) getFixture().getEditor(); }
 
     /**
      * Returns the offset of the caret in the in-memory editor instance.
      *
      * @return the offset of the caret in the in-memory editor instance.
      */
-    default int getCaretOffset() { return getFixture().getCaretOffset();}
+    default int getCaretOffset() { return getFixture().getCaretOffset(); }
 
     /**
      * Returns the file currently loaded into the in-memory editor.
      *
      * @return the file currently loaded into the in-memory editor.
      */
-    default PsiFile getFile() { return getFixture().getFile();}
+    default PsiFile getFile() { return getFixture().getFile(); }
 
+    /**
+     * Get PsiManager for the test
+     *
+     * @return PsiManager
+     */
     PsiManager getPsiManager();
 
+    /**
+     * Create a light file for the given text
+     *
+     * @param fileType file type
+     * @param text     file text
+     *
+     * @return PsiFile
+     */
     PsiFile createLightFile(FileType fileType, String text);
 
+    /**
+     * Create a light file for the given text
+     *
+     * @param fileName file name
+     * @param language language
+     * @param text     file text
+     *
+     * @return PsiFile
+     */
     PsiFile createLightFile(String fileName, Language language, String text);
 
+    /**
+     * Get Module for the test
+     *
+     * @return Module
+     */
     @NotNull
     Module getModule();
 
+    /**
+     * Add a suppressed exception
+     *
+     * @param e exception to add
+     */
     void addSuppressedException(@NotNull Throwable e);
 
     boolean shouldContainTempFiles();
@@ -442,8 +556,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     boolean runInDispatchThread();
 
-    @NotNull
-    <T extends Disposable> T disposeOnTearDown(@NotNull T disposable);
+    @NotNull <T extends Disposable> T disposeOnTearDown(@NotNull T disposable);
 
     @NotNull
     String getTestName(boolean lowercaseFirstLetter);
@@ -494,7 +607,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
             boolean ignoreExtraHighlighting
     ) {
         ExpectedHighlightingData data = new ExpectedHighlightingData(
-                getEditor().getDocument(), checkWarnings, checkWeakWarnings, checkInfos, ignoreExtraHighlighting, null);
+                getEditor().getDocument(), checkWarnings, checkWeakWarnings, checkInfos, ignoreExtraHighlighting, (ResourceBundle[]) null);
         data.init();
         return collectAndCheckHighlighting(specRenderer, data, checkLineMarkers);
     }

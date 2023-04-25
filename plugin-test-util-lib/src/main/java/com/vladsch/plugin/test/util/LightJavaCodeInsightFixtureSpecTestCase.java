@@ -27,7 +27,6 @@ import com.intellij.psi.PsiElementFactory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.testFramework.LightProjectDescriptor;
-import com.intellij.testFramework.exceptionCases.AbstractExceptionCase;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
 import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase;
 import com.intellij.testFramework.fixtures.TempDirTestFixture;
@@ -48,9 +47,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -70,7 +67,7 @@ public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaC
 
     @Rule final public ExpectedException myThrown = none();
 
-    @Parameterized.Parameter(0)
+    @Parameterized.Parameter()
     public @NotNull SpecExample myExample = SpecExample.NULL;
 
     // standard options
@@ -97,7 +94,7 @@ public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaC
     @NotNull
     @Override
     protected LightProjectDescriptor getProjectDescriptor() {
-        return new SpecTestCaseJavaProjectDescriptor(LanguageLevel.JDK_1_8);
+        return new SpecTestCaseJavaProjectDescriptor(LanguageLevel.JDK_11);
     }
 
     @Test
@@ -145,9 +142,9 @@ public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaC
     @NotNull @Override final public String getTestDirectoryName() { return super.getTestDirectoryName();}
     @Override final public boolean isPerformanceTest() { return super.isPerformanceTest();}
     @Override final public boolean isStressTest() { return super.isStressTest();}
-    @Override final public void assertException(@NotNull AbstractExceptionCase<?> exceptionCase) { super.assertException(exceptionCase);}
-    @Override final public void assertException(@NotNull AbstractExceptionCase exceptionCase, @Nullable String expectedErrorMsg) { super.assertException(exceptionCase, expectedErrorMsg);}
-    @Override final public <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T { super.assertNoException(exceptionCase);}
+    //@Override final public void assertException(@NotNull AbstractExceptionCase<?> exceptionCase) { super.assertException(exceptionCase);}
+    //@Override final public void assertException(@NotNull AbstractExceptionCase exceptionCase, @Nullable String expectedErrorMsg) { super.assertException(exceptionCase, expectedErrorMsg);}
+    //@Override final public <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T { super.assertNoException(exceptionCase);}
     @Override final public void assertNoThrowable(@NotNull Runnable closure) { super.assertNoThrowable(closure);}
     @Override final public boolean annotatedWith(@NotNull Class<? extends Annotation> annotationClass) { return super.annotatedWith(annotationClass);}
     @NotNull @Override final public String getHomePath() { return super.getHomePath();}
