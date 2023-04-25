@@ -9,7 +9,7 @@
 
 ### Version 1.212.4
 
-* Remove: disable intellij plugin related tasks
+* Change: disable intellij plugin related tasks
 * Change: switch to sev ver, minor ver reflects IDE min version compatibility, patch ver
   reflects changes to the library itself
 * Change: migrate to gradle build.

@@ -91,10 +91,16 @@
     line-height: 1.6;
 }
 
+code:before, code:after {
+    content: &quot;\00a0&quot;;
+    letter-spacing: -0.5em;
+}
+
 code { 
     background-color:#ffe8f8;
     border-radius:2px;
-    padding:1px 0 0 0;
+    padding-top:0.2em;
+    padding-bottom:0.1em;
     border:1px solid #eec5e1;
     font-family:Consolas,Inconsolata,Courier,monospace;
     font-size:0.9em;color:#b00042; 

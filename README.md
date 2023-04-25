@@ -4,6 +4,8 @@
 
 ### Table of Contents
 - [Summary](#summary)
+  - [Maven Dependency](#maven-dependency)
+  - [Gradle Dependency](#gradle-dependency)
 - [Test File Format](#test-file-format)
 
 ### Summary
@@ -26,6 +28,23 @@ which contains the original spec file inputs for all examples with actual result
 run. This allows updating of all expected values from actual results using a single diff in the
 IDE. It makes updating expected from actual values a quick and painless operation, performed on
 all tests in the spec instead of a tedious cut/paste/edit process on each test separately.
+
+#### Maven Dependency
+
+```xml
+<dependency>
+    <groupId>com.vladsch.plugin-util</groupId>
+    <artifactId>plugin-util-lib</artifactId>
+    <version>1.212.4</version>
+    <scope>test</scope>
+</dependency>
+```
+
+#### Gradle Dependency
+
+```groovy
+testImplementation "com.vladsch.plugin-util:plugin-util-lib:1.212.4"
+```
 
 ### Test File Format
 
@@ -76,7 +95,7 @@ case used to set right margin, turn on wrap on typing and invoke `type()` for te
 
 ---
 
-Copyright (c) 2019-2023, Vladimir Schneider,
+Copyright (c) 2018-2023, Vladimir Schneider,
 
 Apache License Version 2.0, see [LICENSE.txt] file.
 
