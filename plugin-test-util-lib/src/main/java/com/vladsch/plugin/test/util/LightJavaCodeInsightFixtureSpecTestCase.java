@@ -57,13 +57,14 @@ import static org.junit.rules.ExpectedException.none;
 public abstract class LightJavaCodeInsightFixtureSpecTestCase extends LightJavaCodeInsightFixtureTestCase implements CodeInsightFixtureSpecTestCase {
     @Before
     public void before() throws Throwable {
-        setUp();
+        // NOTE: for UsefulTestCase setUp() should not be invoked from any @Before methods
     }
 
     @After
     public void after() throws Throwable {
-        tearDown();
+        // NOTE: for UsefulTestCase tearDown() should not be invoked from any @After methods
     }
+
 
     @Rule final public ExpectedException myThrown = none();
 

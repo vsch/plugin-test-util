@@ -19,22 +19,22 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleTypeId;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.projectRoots.Sdk;
-import com.intellij.openapi.projectRoots.SdkType;
-import com.intellij.openapi.projectRoots.impl.SdkConfigurationUtil;
 import com.intellij.openapi.roots.ContentEntry;
 import com.intellij.openapi.roots.LanguageLevelModuleExtension;
 import com.intellij.openapi.roots.ModifiableRootModel;
-import com.intellij.openapi.roots.ModuleRootModificationUtil;
 import com.intellij.pom.java.AcceptedLanguageLevelsSettings;
 import com.intellij.pom.java.LanguageLevel;
 import com.intellij.testFramework.IdeaTestUtil;
 import com.intellij.testFramework.LightProjectDescriptor;
 import com.intellij.testFramework.PsiTestUtil;
+import com.intellij.testFramework.fixtures.MavenDependencyUtil;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SpecTestCaseJavaProjectDescriptor extends LightProjectDescriptor {
+    public static final String MAVEN_PREFIX = "maven:";
     protected final LanguageLevel myLanguageLevel;
     protected final String[] myModuleLibraries;
 
@@ -55,25 +55,28 @@ public class SpecTestCaseJavaProjectDescriptor extends LightProjectDescriptor {
         super.setUpProject(project, handler);
     }
 
-    public void setupAndAddSdk() {
-
-    }
-
     @Override
     public Sdk getSdk() {
         return IdeaTestUtil.getMockJdk(myLanguageLevel.toJavaVersion());
     }
 
-    public void addModuleLibrary(@NotNull Module module, String... libraryJars) {
-        for (String library : libraryJars) {
-            ModuleRootModificationUtil.addModuleLibrary(module, library);
-        }
-    }
-
     @Override
     public void configureModule(@NotNull Module module, @NotNull ModifiableRootModel model, @NotNull ContentEntry contentEntry) {
         model.getModuleExtension(LanguageLevelModuleExtension.class).setLanguageLevel(myLanguageLevel);
-        PsiTestUtil.addProjectLibrary(module, "test-lib", Arrays.asList(myModuleLibraries));
+        List<String> jarLibs = new ArrayList<>();
+
+        for (String library : myModuleLibraries) {
+            if (library.startsWith(MAVEN_PREFIX)) {
+                // use maven dependency
+                MavenDependencyUtil.addFromMaven(model, library.substring(MAVEN_PREFIX.length()));
+            } else {
+                jarLibs.add(library);
+            }
+        }
+
+        if (jarLibs.size() > 0) {
+            PsiTestUtil.addProjectLibrary(module, "test-lib", jarLibs);
+        }
     }
 
     @NotNull

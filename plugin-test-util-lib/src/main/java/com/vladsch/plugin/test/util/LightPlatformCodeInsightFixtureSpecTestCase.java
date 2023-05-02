@@ -23,9 +23,8 @@ import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
-import com.intellij.testFramework.exceptionCases.AbstractExceptionCase;
+import com.intellij.testFramework.fixtures.BasePlatformTestCase;
 import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
-import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
 import com.intellij.testFramework.fixtures.TempDirTestFixture;
 import com.intellij.util.ReflectionUtil;
 import com.intellij.util.ThrowableRunnable;
@@ -46,11 +45,9 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
 import javax.swing.Timer;
-import java.io.File;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -61,16 +58,16 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.rules.ExpectedException.none;
 
 @RunWith(value = Parameterized.class)
-public abstract class LightPlatformCodeInsightFixtureSpecTestCase extends LightPlatformCodeInsightFixtureTestCase implements CodeInsightFixtureSpecTestCase {
+public abstract class LightPlatformCodeInsightFixtureSpecTestCase extends BasePlatformTestCase implements CodeInsightFixtureSpecTestCase {
     @Before
     public void before() throws Throwable {
-        setUp();
+        // NOTE: for UsefulTestCase setUp() should not be invoked from any @Before methods
     }
 
     @After
     public void after() throws Throwable {
+        // NOTE: for UsefulTestCase tearDown() should not be invoked from any @After methods
         checkJavaSwingTimersAreDisposed();
-        tearDown();
     }
 
     void checkJavaSwingTimersAreDisposed() {
@@ -174,9 +171,9 @@ public abstract class LightPlatformCodeInsightFixtureSpecTestCase extends LightP
     @NotNull @Override final public String getTestDirectoryName() { return super.getTestDirectoryName();}
     @Override final public boolean isPerformanceTest() { return super.isPerformanceTest();}
     @Override final public boolean isStressTest() { return super.isStressTest();}
-    @Override final public void assertException(@NotNull AbstractExceptionCase<?> exceptionCase) { super.assertException(exceptionCase);}
-    @Override final public void assertException(@NotNull AbstractExceptionCase exceptionCase, @Nullable String expectedErrorMsg) { super.assertException(exceptionCase, expectedErrorMsg);}
-    @Override final public <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T { super.assertNoException(exceptionCase);}
+//    @Override final public void assertException(@NotNull AbstractExceptionCase<?> exceptionCase) { super.assertException(exceptionCase);}
+//    @Override final public void assertException(@NotNull AbstractExceptionCase exceptionCase, @Nullable String expectedErrorMsg) { super.assertException(exceptionCase, expectedErrorMsg);}
+//    @Override final public <T extends Throwable> void assertNoException(@NotNull AbstractExceptionCase<T> exceptionCase) throws T { super.assertNoException(exceptionCase);}
     @Override final public void assertNoThrowable(@NotNull Runnable closure) { super.assertNoThrowable(closure);}
     @Override final public boolean annotatedWith(@NotNull Class<? extends Annotation> annotationClass) { return super.annotatedWith(annotationClass);}
     @NotNull @Override final public String getHomePath() { return super.getHomePath();}

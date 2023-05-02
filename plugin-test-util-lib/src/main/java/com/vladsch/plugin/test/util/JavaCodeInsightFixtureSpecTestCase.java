@@ -48,9 +48,7 @@ import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
-import java.io.File;
 import java.lang.annotation.Annotation;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -58,15 +56,14 @@ import static org.junit.rules.ExpectedException.none;
 
 @RunWith(value = Parameterized.class)
 public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsightFixtureTestCase implements CodeInsightFixtureSpecTestCase {
-
     @Before
     public void before() throws Throwable {
-        setUp();
+        // NOTE: for UsefulTestCase setUp() should not be invoked from any @Before methods
     }
 
     @After
     public void after() throws Throwable {
-        tearDown();
+        // NOTE: for UsefulTestCase tearDown() should not be invoked from any @After methods
     }
 
     @Override
@@ -74,7 +71,7 @@ public abstract class JavaCodeInsightFixtureSpecTestCase extends JavaCodeInsight
         super.tuneFixture(moduleBuilder);
 
         //moduleBuilder.addJdk("/Applications/IntelliJ-IDEA-2019.3-CE-EAP.app/Contents/jbr/Contents/Home");
-        moduleBuilder.setLanguageLevel(LanguageLevel.JDK_1_8);
+        moduleBuilder.setLanguageLevel(LanguageLevel.JDK_11);
 //        moduleBuilder.addLibrary("test_lib",
 //                "/Users/vlad/src/projects/idea-multimarkdown3/WebViewDebugSample/lib/annotations-18.0.0.jar"
 //                , "/Users/vlad/src/projects/idea-multimarkdown3/lib/flexmark-parent.jar"

@@ -29,6 +29,8 @@ public interface LightFixtureActionSpecTest extends CodeInsightFixtureSpecTestCa
     static Map<String, DataHolder> getOptionsMap() {
         synchronized (optionsMap) {
             if (optionsMap.isEmpty()) {
+                optionsMap.putAll(CodeInsightFixtureSpecTestCase.getOptionsMap());
+                
                 optionsMap.put("type-comma", new MutableDataSet().set(ACTION_NAME, ","));
                 optionsMap.put("backspace", new MutableDataSet().set(ACTION_NAME, backspace));
                 optionsMap.put("show-clipboard", new MutableDataSet().set(CLIPBOARD_CONTENT, true));

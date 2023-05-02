@@ -12,14 +12,18 @@ def javaVersion = properties["javaVersion"] ?: "11"
 def projectVersion = properties["projectVersion"] ?: "1.0.SNAPSHOT"
 def projectArtifactId = properties["projectArtifactId"] ?: ""
 def projectGroup = properties["projectGroup"] ?: "com.vladsch.${projectArtifactId}"
-def flexmarkVersion = "0.64.0"
+def flexmarkVersion = "0.64.4"
 
 group = projectGroup
 version = projectVersion
 
 repositories {
     mavenCentral()
-    mavenLocal()
+    mavenLocal() {
+        content {
+            includeGroup "com.vladsch.plugin-util"
+        }
+    }
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -27,8 +31,8 @@ repositories {
 intellij {
     //version =  "2020.3.4"
     //version = "2021.2.4"
-    version = "2021.2"
-//    version = "2021.3"
+//    version = "2021.2"
+    version = "2021.3"
     type = "IC" // Target IDE Platform
     plugins = ["java"]
     downloadSources = true
@@ -36,16 +40,13 @@ intellij {
 
 dependencies {
     testImplementation "junit:junit:4.13.2"
-    
+//    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.2'
+//    testImplementation 'org.junit.vintage:junit-vintage-engine:5.9.2'
+
     compileOnly "org.jetbrains:annotations:24.0.1"
     implementation "com.vladsch.flexmark:flexmark-util:$flexmarkVersion"
     implementation "com.vladsch.flexmark:flexmark-test-util:$flexmarkVersion"
-    implementation "com.vladsch.plugin-util:plugin-util-lib:1.2.2"
-/*
-    implementation("com.vladsch.flexmark:flexmark-tree-iteration:$flexmarkVersion") {
-        exclude(group: "org.slf4j", module: "slf4j-api")
-    }
-*/
+    implementation "com.vladsch.plugin-util:plugin-util-lib:1.212.6"
 }
 
 sourceSets {

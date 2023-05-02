@@ -41,6 +41,8 @@ public interface LightFixtureIntentionSpecTest extends LightFixtureActionSpecTes
     static Map<String, DataHolder> getOptionsMap() {
         synchronized (optionsMap) {
             if (optionsMap.isEmpty()) {
+                optionsMap.putAll(LightFixtureActionSpecTest.getOptionsMap());
+                
                 optionsMap.put("intention", new MutableDataSet().set(SpecTest.CUSTOM_OPTION, LightFixtureIntentionSpecTest::intentionOption));
                 optionsMap.put("file-param", new MutableDataSet().set(SpecTest.CUSTOM_OPTION, LightFixtureIntentionSpecTest::fileParamOption));
                 optionsMap.put("caret-markup", new MutableDataSet().set(CodeInsightFixtureSpecTestCase.TEST_CARET_MARKUP, true));

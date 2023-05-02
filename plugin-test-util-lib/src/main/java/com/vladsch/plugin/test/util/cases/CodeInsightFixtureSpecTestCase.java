@@ -20,8 +20,13 @@ import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerEx;
 import com.intellij.codeInsight.daemon.impl.DaemonCodeAnalyzerImpl;
 import com.intellij.codeInsight.daemon.impl.HighlightInfo;
 import com.intellij.codeInsight.daemon.impl.HighlightInfoType;
+import com.intellij.codeInsight.daemon.impl.ShowIntentionsPass;
 import com.intellij.codeInsight.intention.IntentionAction;
+import com.intellij.codeInsight.intention.impl.CachedIntentions;
+import com.intellij.codeInsight.intention.impl.IntentionListStep;
 import com.intellij.codeInsight.lookup.LookupManager;
+import com.intellij.ide.highlighter.JavaClassFileType;
+import com.intellij.ide.highlighter.JavaFileType;
 import com.intellij.injected.editor.VirtualFileWindow;
 import com.intellij.lang.Language;
 import com.intellij.lang.annotation.HighlightSeverity;
@@ -38,7 +43,6 @@ import com.intellij.openapi.editor.ex.EditorEx;
 import com.intellij.openapi.fileEditor.ex.FileEditorManagerEx;
 import com.intellij.openapi.fileEditor.impl.EditorHistoryManager;
 import com.intellij.openapi.fileTypes.FileType;
-import com.intellij.openapi.fileTypes.StdFileTypes;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.Disposer;
@@ -73,6 +77,7 @@ import com.vladsch.flexmark.util.data.DataHolder;
 import com.vladsch.flexmark.util.data.DataKey;
 import com.vladsch.flexmark.util.data.DataSet;
 import com.vladsch.plugin.test.util.IntentionInfo;
+import com.vladsch.plugin.test.util.TestBundle;
 import com.vladsch.plugin.test.util.renderers.LightFixtureSpecRenderer;
 import com.vladsch.plugin.util.TestUtils;
 import junit.framework.TestCase;
@@ -97,7 +102,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.ResourceBundle;
 import java.util.function.Function;
 
 import static java.util.Comparator.comparingInt;
@@ -119,6 +123,9 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
     static Map<String, DataHolder> getOptionsMap() {
         synchronized (optionsMap) {
+            if (optionsMap.isEmpty()) {
+                optionsMap.putAll(SpecTest.optionsMap);
+            }
             return optionsMap;
         }
     }
@@ -236,6 +243,51 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     }
 
     @NotNull
+    default List<IntentionAction> getAvailableIntentions(@NotNull LightFixtureSpecRenderer<?> specRenderer, @NotNull Editor editor, @NotNull PsiFile file, boolean atCaretOnly) {
+        return ReadAction.compute(() -> doGetAvailableIntentions(specRenderer, editor, file, atCaretOnly));
+    }
+
+    @NotNull
+    default List<IntentionAction> doGetAvailableIntentions(@NotNull LightFixtureSpecRenderer<?> specRenderer, @NotNull Editor editor, @NotNull PsiFile file, boolean atCaretOnly) {
+        // NOTE: needed to simulate getting code analyzer topic
+        beforeDoHighlighting(specRenderer, file);
+
+        IdeaTestExecutionPolicy current = IdeaTestExecutionPolicy.current();
+        if (current != null) {
+            current.waitForHighlighting(file.getProject(), editor);
+        }
+        ShowIntentionsPass.IntentionsInfo intentions = ShowIntentionsPass.getActionsToShow(editor, file, false);
+
+        List<IntentionAction> result = new ArrayList<>();
+        IntentionListStep intentionListStep = new IntentionListStep(null, editor, file, file.getProject(),
+                CachedIntentions.create(file.getProject(), file, editor, intentions));
+        for (Map.Entry<IntentionAction, List<IntentionAction>> entry : intentionListStep.getActionsWithSubActions().entrySet()) {
+            result.add(entry.getKey());
+            result.addAll(entry.getValue());
+        }
+
+        List<HighlightInfo> infos = DaemonCodeAnalyzerEx.getInstanceEx(file.getProject()).getFileLevelHighlights(file.getProject(), file);
+        for (HighlightInfo info : infos) {
+            List<Pair<HighlightInfo.IntentionActionDescriptor, TextRange>> fixRanges = info.quickFixActionRanges;
+            if (fixRanges != null) {
+                for (Pair<HighlightInfo.IntentionActionDescriptor, TextRange> pair : fixRanges) {
+                    HighlightInfo.IntentionActionDescriptor actionInGroup = pair.first;
+                    if (actionInGroup.getAction().isAvailable(file.getProject(), editor, file)) {
+                        result.add(actionInGroup.getAction());
+                        Iterable<? extends IntentionAction> options = actionInGroup.getOptions(file, editor);
+                        for (IntentionAction subAction : options) {
+                            if (subAction.isAvailable(file.getProject(), editor, file)) {
+                                result.add(subAction);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    @NotNull
     default List<IntentionInfo> getAvailableIntentionsWithRanges(@NotNull LightFixtureSpecRenderer<?> specRenderer, @NotNull Editor editor, @NotNull PsiFile file, boolean atCaretOnly) {
         // NOTE: needed to simulate getting code analyzer topic
         beforeDoHighlighting(specRenderer, file);
@@ -249,13 +301,13 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
 
         Integer atOffset = atCaretOnly ? editor.getCaretModel().getOffset() : null;
         DaemonCodeAnalyzerEx.processHighlights(editor.getDocument(), file.getProject(), HighlightSeverity.INFORMATION, 0, editor.getDocument().getTextLength(), info -> {
-            collectIntentionActions(atOffset, info, false, editor, file, intentions);
+            doCollectIntentionActions(atOffset, info, false, editor, file, intentions);
             return true;
         });
 
         List<HighlightInfo> infos = DaemonCodeAnalyzerEx.getInstanceEx(file.getProject()).getFileLevelHighlights(file.getProject(), file);
         for (HighlightInfo info : infos) {
-            collectIntentionActions(null, info, true, editor, file, intentions);
+            doCollectIntentionActions(null, info, true, editor, file, intentions);
         }
 
         intentions.sort(IntentionInfo::compareTo);
@@ -263,7 +315,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         return intentions;
     }
 
-    static void collectIntentionActions(@Nullable Integer atOffset, HighlightInfo info, boolean fileLevel, @NotNull Editor editor, @NotNull PsiFile file, List<IntentionInfo> intentions) {
+    static void doCollectIntentionActions(@Nullable Integer atOffset, HighlightInfo info, boolean fileLevel, @NotNull Editor editor, @NotNull PsiFile file, List<IntentionInfo> intentions) {
         List<Pair<HighlightInfo.IntentionActionDescriptor, TextRange>> fixRanges = info.quickFixActionRanges;
         if (fixRanges != null) {
             for (Pair<HighlightInfo.IntentionActionDescriptor, TextRange> pair : fixRanges) {
@@ -271,14 +323,11 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
                     HighlightInfo.IntentionActionDescriptor actionInGroup = pair.first;
                     IntentionAction action = actionInGroup.getAction();
                     if (action.isAvailable(file.getProject(), editor, file)) {
-
                         Iterable<? extends IntentionAction> options = actionInGroup.getOptions(file, editor);
                         ArrayList<IntentionInfo> subActions = new ArrayList<>();
-                        if (options != null) {
-                            for (IntentionAction subAction : options) {
-                                if (subAction.isAvailable(file.getProject(), editor, file)) {
-                                    subActions.add(IntentionInfo.of(fileLevel, subAction));
-                                }
+                        for (IntentionAction subAction : options) {
+                            if (subAction.isAvailable(file.getProject(), editor, file)) {
+                                subActions.add(IntentionInfo.of(fileLevel, subAction));
                             }
                         }
 
@@ -607,7 +656,7 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
             boolean ignoreExtraHighlighting
     ) {
         ExpectedHighlightingData data = new ExpectedHighlightingData(
-                getEditor().getDocument(), checkWarnings, checkWeakWarnings, checkInfos, ignoreExtraHighlighting, (ResourceBundle[]) null);
+                getEditor().getDocument(), checkWarnings, checkWeakWarnings, checkInfos, ignoreExtraHighlighting, TestBundle.getBundle());
         data.init();
         return collectAndCheckHighlighting(specRenderer, data, checkLineMarkers);
     }
@@ -637,18 +686,16 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
         // NOTE: line markers may trigger access to project files which the fileTreeAccessFilter blocks, so we limit filter to only the file being checked
         final VirtualFileFilter fileTreeAccessFilter = new VirtualFileFilter() {
             @Override
-            public boolean accept(VirtualFile file) {
+            public boolean accept(@NotNull VirtualFile file) {
                 if (file instanceof VirtualFileWindow || !file.equals(virtualFile)) return false;
 
                 FileType fileType = file.getFileType();
-                return (fileType == StdFileTypes.JAVA || fileType == StdFileTypes.CLASS) && !file.getName().equals("package-info.java");
+                return (fileType == JavaFileType.INSTANCE || fileType == JavaClassFileType.INSTANCE) && !file.getName().equals("package-info.java");
             }
         };
 
         Disposable disposable = Disposer.newDisposable();
-        if (fileTreeAccessFilter != null) {
-            PsiManagerEx.getInstanceEx(project).setAssertOnFileLoadingFilter(fileTreeAccessFilter, disposable);
-        }
+        PsiManagerEx.getInstanceEx(project).setAssertOnFileLoadingFilter(fileTreeAccessFilter, disposable);
 
         //    ProfilingUtil.startCPUProfiling();
         List<HighlightInfo> infos;

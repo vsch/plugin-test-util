@@ -29,11 +29,11 @@ public class ParamRowGenerator {
     }
 
     public interface ColumnProvider {
-        int getColumn(@NotNull Object[] row);
+        int getColumn(@Nullable Object @NotNull [] row);
     }
 
     public interface LineProvider {
-        int getLineOffset(@NotNull Object[] row);
+        int getLineOffset(@Nullable Object @NotNull [] row);
     }
 
     final public static Decorator NULL_DECORATOR = (index, prefix, suffix) -> prefix + suffix;
@@ -68,7 +68,7 @@ public class ParamRowGenerator {
      *
      * @return this
      */
-    public ParamRowGenerator row(Object[] row) {
+    public ParamRowGenerator row(@Nullable Object @NotNull [] row) {
         return row(1, row, null, null, null);
     }
 
@@ -81,7 +81,7 @@ public class ParamRowGenerator {
      *
      * @return this
      */
-    protected ParamRowGenerator row(int callerOffset, @NotNull Object[] row, @Nullable Decorator decorator) {
+    protected ParamRowGenerator row(int callerOffset, @Nullable Object @NotNull [] row, @Nullable Decorator decorator) {
         return row(callerOffset + 1, row, decorator, null, null);
     }
 
@@ -96,7 +96,7 @@ public class ParamRowGenerator {
      *
      * @return this
      */
-    public ParamRowGenerator row(int callerOffset, @NotNull Object[] row, @Nullable Decorator decorator, @Nullable LineProvider lineProvider, @Nullable ColumnProvider columnProvider) {
+    public ParamRowGenerator row(int callerOffset, @Nullable Object @NotNull[] row, @Nullable Decorator decorator, @Nullable LineProvider lineProvider, @Nullable ColumnProvider columnProvider) {
         return rowOffset(callerOffset + 1, 0, row, decorator, lineProvider, columnProvider);
     }
 
@@ -112,7 +112,7 @@ public class ParamRowGenerator {
      *
      * @return this
      */
-    public ParamRowGenerator rowOffset(int callerOffset, int insertAt, @NotNull Object[] row, @Nullable Decorator decorator, @Nullable LineProvider lineProvider, @Nullable ColumnProvider columnProvider) {
+    public ParamRowGenerator rowOffset(int callerOffset, int insertAt, @Nullable Object @NotNull [] row, @Nullable Decorator decorator, @Nullable LineProvider lineProvider, @Nullable ColumnProvider columnProvider) {
         assert insertAt >= 0 && insertAt <= row.length;
 
         if (decorator == null) decorator = NULL_DECORATOR;
