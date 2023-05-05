@@ -116,7 +116,8 @@ public interface CodeInsightFixtureSpecTestCase extends SpecTest {
     String BANNER_SEGMENTS = bannerText("SEGMENTS");
     String BANNER_AFTER_ACTION = bannerText("After Action");
     String BANNER_BEFORE_ACTION = bannerText("Before Action");
-    ExceptionMatcher EXCEPTION_MATCHER = ExceptionMatcher.matchPrefix(RuntimeException.class, "junit.framework.ComparisonFailure: ");
+//    ExceptionMatcher EXCEPTION_MATCHER = ExceptionMatcher.matchPrefix(RuntimeException.class, "junit.framework.ComparisonFailure: ");
+    ExceptionMatcher EXCEPTION_MATCHER = ExceptionMatcher.matchPrefix(junit.framework.ComparisonFailure.class, "");
 
     Map<String, DataHolder> optionsMap = new HashMap<>();
     DataKey<Boolean> TEST_CARET_MARKUP = new DataKey<>("TEST_CARET_MARKUP", false);

@@ -34,8 +34,8 @@ all tests in the spec instead of a tedious cut/paste/edit process on each test s
 ```xml
 <dependency>
     <groupId>com.vladsch.plugin-util</groupId>
-    <artifactId>plugin-util-lib</artifactId>
-    <version>1.212.4</version>
+    <artifactId>plugin-test-util-lib</artifactId>
+    <version>1.213.8</version>
     <scope>test</scope>
 </dependency>
 ```
@@ -43,7 +43,7 @@ all tests in the spec instead of a tedious cut/paste/edit process on each test s
 #### Gradle Dependency
 
 ```groovy
-testImplementation "com.vladsch.plugin-util:plugin-util-lib:1.212.4"
+testImplementation "com.vladsch.plugin-test-util:plugin-test-util-lib:1.213.8"
 ```
 
 ### Test File Format
