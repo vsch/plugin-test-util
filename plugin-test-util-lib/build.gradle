@@ -12,7 +12,8 @@ def javaVersion = properties["javaVersion"] ?: "11"
 def projectVersion = properties["projectVersion"] ?: "1.0.SNAPSHOT"
 def projectArtifactId = properties["projectArtifactId"] ?: ""
 def projectGroup = properties["projectGroup"] ?: "com.vladsch.${projectArtifactId}"
-def flexmarkVersion = "0.64.4"
+def flexmarkVersion = properties["flexmarkVersion"] ?: ""
+def pluginUtilVersion = properties["pluginUtilVersion"] ?: ""
 
 group = projectGroup
 version = projectVersion
@@ -46,11 +47,11 @@ dependencies {
     compileOnly "org.jetbrains:annotations:24.0.1"
     implementation "com.vladsch.flexmark:flexmark-util:$flexmarkVersion"
     implementation "com.vladsch.flexmark:flexmark-test-util:$flexmarkVersion"
-    implementation "com.vladsch.plugin-util:plugin-util-lib:1.212.6"
+    implementation "com.vladsch.plugin-util:plugin-util-lib:$pluginUtilVersion"
 }
 
 sourceSets {
-    main { 
+    main {
         java {
             srcDirs = ["src/main/java"]
             resources.srcDirs = ["src/main/resources"]
@@ -60,7 +61,7 @@ sourceSets {
 //            srcDirs = ["src/main"]
 //        }
     }
-    test { 
+    test {
         java {
             srcDirs = ["src/test/java"]
             resources.srcDirs = ["src/test/resources"]

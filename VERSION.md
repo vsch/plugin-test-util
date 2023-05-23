@@ -9,6 +9,10 @@
 - [Version 1.0.2](#version-102)
 - [Version 1.0.0](#version-100)
 
+### Version 1.213.10
+
+* Change: update to `flexmark-java:0.64.8`
+
 ### Version 1.213.8
 
 * Fix: `CodeInsightFixtureSpecTestCase.EXCEPTION_MATCHER` to expect
